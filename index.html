@@ -236,6 +236,10 @@
   .nums .n { font-size: 34px; font-weight: 700; }
   .chart figcaption { font-size: 14px; line-height: 1.6; }
   .tag2 { color: var(--sub); border-color: var(--line); }
+  .cop .card { padding: 22px 24px; }
+  .cop .v { font-size: 24px; font-weight: 700; color: var(--ink); margin: 6px 0 10px; }
+  .cop { margin-bottom: 20px; }
+  .save .card:nth-child(3) { grid-row: auto; }
 
   /* 話す内容メモ */
   #notes { display: none; position: fixed; left: 0; right: 0; bottom: 52px; max-height: 38vh; overflow: auto; background: rgba(8,12,24,.97); border-top: 1px solid var(--line); padding: 14px 26px 18px; z-index: 5; }
@@ -358,7 +362,7 @@
     <div class="col"><img src="videos/a_run3.jpg" alt="3回目：白い陶器のコップ"><div class="meta"><div class="what">3回目：白い陶器<br>高さ約10cm・直径約9cm</div></div></div>
     <div class="col"><img src="videos/a_run4.jpg" alt="4回目：白い陶器のコップ"><div class="meta"><div class="what">4回目：白い陶器<br>高さ約10cm・直径約9cm</div></div></div>
   </div>
-  <div class="callout f">この4回はすべて白い陶器でしたが、さらに試すとガラスのコップになることもありました。指示に書いていない素材や大きさは、AIがその都度決めています。</div>
+  <div class="callout f">この4回はすべて白い陶器でしたが、さらに試すとガラスのコップになることもありました。<br>指示に書いていない素材や大きさは、AIがその都度決めています。</div>
 </section>
 
 <!-- 9 動画B -->
@@ -449,11 +453,24 @@
     <div class="card f"><div class="no">1</div><div><h3>頼み直しを減らす</h3><p>狙いと違う物ができて最初から頼み直すと、そのたびに約5万かかります。必要なことは最初の指示に書きます。</p></div></div>
     <div class="card f"><div class="no">2</div><div><h3>直すときは同じ会話で頼む</h3><p>今回は、1回の修正で +0.4〜0.6万でした。</p></div></div>
     <div class="card f"><div class="no">3</div><div><h3>別の作業は、新しい会話で始める</h3><p>会話が長くなるほど、操作のたびに読む量が増えます。前提は仕様のファイル（CLAUDE.md、copilot-instructions.md など）に書いておけば、新しい会話でも引き継げます。</p></div></div>
-    <div class="card f"><div class="no">4</div><div><h3>確認してほしい範囲を伝える</h3><p>どこまで確認すればよいかを「完成の基準」として書きます。<span class="tag2">未計測</span></p></div></div>
-    <div class="card f"><div class="no">5</div><div><h3>使わない道具は接続しない</h3><p>毎回かかる分には、接続した道具の説明も含まれます。<span class="tag2">未計測</span></p></div></div>
+    <div class="card f"><div class="no">4</div><div><h3>完成の基準を書く</h3><p>指示Cに「斜め上からの画像を1回見て、寸法と色分けが合っていれば完成」と足すと、約6.4万から約5.5万に減りました（操作は10回から3回）。</p></div></div>
+    <div class="card f"><div class="no">5</div><div><h3>使わない道具は読み込まない</h3><p>作業をさせずに比べると、Blender の道具3つを読み込むだけで約4.3万から約4.9万に増えました。</p></div></div>
   </div>
-  <div class="callout f">GitHub Copilot も、2026年6月からトークン消費量に応じた課金（AI Credits）になりました。上の方法は Copilot でも同じように使えます。</div>
-  <p class="foot">※ 数字は今回 Claude Code が記録した値で、小さな作業での一例です。4・5 は今回は測っていません。</p>
+  <p class="foot">※ 数字は今回 Claude Code が記録した値で、小さな作業での一例です。4 は2回試した結果で、確認を減らすと誤りに気づきにくくなる点に注意が必要です。</p>
+</section>
+
+<!-- 16b Copilot -->
+<section class="slide">
+  <p class="kicker">トークン消費量</p>
+  <h2>GitHub Copilot に置き換えると</h2>
+  <p class="sub" style="margin:-14px 0 18px">GitHub Copilot の月額プランは、2026年6月から、使ったトークン量に応じて「AI Credits」が減る方式になりました。</p>
+  <div class="grid3 cop">
+    <div class="card f"><h3>クレジットの単位</h3><p class="v">1 クレジット ＝ 0.01ドル</p><p>Copilot Pro（月10ドル）には、月1,500クレジットが含まれます。</p></div>
+    <div class="card f"><h3>トークンの単価（例）</h3><p class="v">入力 100万トークン ＝ 2ドル</p><p>Claude Sonnet 5.5 の場合。出力は10ドル、キャッシュ済みの入力は0.10ドルです。</p></div>
+    <div class="card f"><h3>換算の目安</h3><p class="v">5万トークン ≒ 10クレジット</p><p>5万トークンを入力として1回読む場合です。出力が多いと増え、キャッシュが効くと減ります。</p></div>
+  </div>
+  <div class="callout f">数え方が同じなので、前のページの5つの方法は GitHub Copilot でも同じように使えます。使用量は GitHub の請求のページで確認できます。</div>
+  <p class="foot">※ 2026年11月時点の GitHub のドキュメントによる。単価はモデルごとに異なり、プランの内容は変わることがあります。</p>
 </section>
 
 <!-- 17 5項目 -->
@@ -558,7 +575,7 @@
 
 <div id="bar">
   <button id="prev" aria-label="前へ">← 前</button>
-  <span id="pageNo">1 / 21</span>
+  <span id="pageNo">1 / 22</span>
   <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
   <button id="notesBtn">話す内容メモ (N)</button>
