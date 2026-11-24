@@ -271,7 +271,7 @@
   .ex .rules li { font-size: 16.5px; margin-bottom: 4px; line-height: 1.5; }
   .ex .card p { font-size: 16px; }
   .ex + .callout { font-size: 19px; padding: 14px 24px; }
-  pre.gitlog { font-size: 14.5px; line-height: 1.9; white-space: pre-wrap; }
+  pre.gitlog { font-size: 13.5px; line-height: 1.55; white-space: pre-wrap; padding: 12px 16px; }
   pre.spec { font-size: 12.5px; line-height: 1.34; padding: 12px 16px; }
   .vsteps .card { padding: 10px 20px; }
   .vsteps .card h3 { font-size: 19px; }
@@ -279,7 +279,10 @@
   .vsteps { gap: 8px; }
   .five .card { padding: 24px 10px; }
   .five b { font-size: 24px; }
-  .summary li { font-size: 25px; margin-bottom: 14px; }
+  .summary li { font-size: 22px; margin-bottom: 12px; }
+  .concl { font-size: 32px; font-weight: 700; line-height: 1.5; margin: 0 0 22px; }
+  .point { font-size: 19px; line-height: 1.6; margin: -14px 0 16px; padding: 6px 0 6px 14px; border-left: 4px solid var(--accent); }
+  .codegrid .rules li { font-size: 17px; }
 
   /* 話す内容メモ */
   #notes { display: none; position: fixed; left: 0; right: 0; bottom: 52px; max-height: 38vh; overflow: auto; background: rgba(8,12,24,.97); border-top: 1px solid var(--line); padding: 14px 26px 18px; z-index: 5; }
@@ -322,7 +325,7 @@
   <ol class="agenda">
     <li class="f">AIが3Dモデルを作るしくみ</li>
     <li class="f">指示の書き方で、結果がどう変わるか</li>
-    <li class="f">ポリゴン数とトークン消費量</li>
+    <li class="f">トークン消費量と、人の手間</li>
     <li class="f">仕様駆動開発の進め方</li>
   </ol>
 </section>
@@ -483,8 +486,8 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
 
 <!-- 16 ポリゴン数 -->
 <section class="slide">
-  <p class="kicker">ポリゴン数</p>
-  <h2>ポリゴン数は、AIが書くコードで決まる</h2>
+  <p class="kicker">ちなみに</p>
+  <h2>ちなみに：ポリゴン数は、AIが書くコードで決まる</h2>
   <div class="cmp3 poly">
     <div class="col"><img src="videos/poly_a.jpg" alt="指示Aのワイヤー表示"><div class="meta"><div class="chars">1,536<small>三角形</small></div><div class="what">指示A（取っ手なしのコップ）</div></div></div>
     <div class="col"><img src="videos/poly_c.jpg" alt="指示Cのワイヤー表示"><div class="meta"><div class="chars">23,540<small>三角形</small></div><div class="what">指示C（円周96分割、縁や底の丸みも細かく分割）</div></div></div>
@@ -619,6 +622,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
 <section class="slide">
   <p class="kicker">仕様駆動開発 ・ 実例</p>
   <h2>実例① 実装の前に、計画と質問を出させる</h2>
+  <p class="point">伝えたいこと：コードを書かせる前に質問させると、仕様の抜けが実装の前に見つかります。</p>
   <div class="grid2 ex" style="align-items:start">
     <div>
       <div class="card f"><span class="lv">Claude Code への指示</span><div class="q2">「spec.md の仕様を実装したい。まだコードは書かないで。先に次の2つを出して。<br>1. 計画: 追加・変更するファイルと、作業の手順<br>2. 質問: 仕様で決まっていない点や、あいまいな点」</div></div>
@@ -642,6 +646,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
 <section class="slide">
   <p class="kicker">仕様駆動開発 ・ 実例</p>
   <h2>実例② テストを先に書かせてから、実装させる</h2>
+  <p class="point">伝えたいこと：受け入れ基準をテストにしておくと、完成したかどうかを、AIの報告ではなくテストの結果で判断できます。</p>
   <div class="grid2 codegrid">
     <pre class="code">class AcceptanceTest(ImportCsvTestCase):
     &quot;&quot;&quot;spec.md の受け入れ基準。&quot;&quot;&quot;
@@ -663,11 +668,11 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
         self.assertIn(&quot;3 行目&quot;, warnings[0])
         self.assertIn(&quot;5 行目&quot;, warnings[1])</pre>
     <div>
-      <p>左は、受け入れ基準「不正な行はスキップし、行番号をログに出す」を Claude Code がテストにしたものです。</p>
+      <p>左は、仕様の受け入れ基準「不正な行はスキップし、行番号をログに出す」を、Claude Code がテストにしたものです。</p>
       <ul class="rules">
-        <li class="f">テスト（319行）を先にコミットし、実行して失敗することを確認しました。</li>
-        <li class="f">実装（163行）のあと、29件のテストがすべて通りました。既存の <code>OrderRepository</code> は変更していません。</li>
-        <li class="f">制約の「10万行を5分以内」は、計測で 0.65秒でした。</li>
+        <li class="f">テスト（319行）を先に書かせ、実行して失敗することを確認しました。実装がまだ無いので、失敗するのが正しい状態です。</li>
+        <li class="f">実装（163行）のあと、29件のテストがすべて通りました。これで、受け入れ基準を満たしたと判断できます。</li>
+        <li class="f">仕様の「制約」も確かめました。10万行は 0.65秒で、既存の <code>OrderRepository</code> は変更されていません。</li>
       </ul>
     </div>
   </div>
@@ -677,6 +682,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
 <section class="slide">
   <p class="kicker">仕様駆動開発 ・ 実例</p>
   <h2>実例③ 仕様変更は、仕様から直す</h2>
+  <p class="point">伝えたいこと：仕様 → テスト → 実装の順に直すと、3つの内容がずれません。変更の影響も、実装の前に分かります。</p>
   <div class="grid2 ex" style="align-items:start">
     <div>
       <div class="card f"><span class="lv">仕様変更の依頼</span><div class="q2">「status が cancelled の注文は取り込まない。不正な行とは別に『対象外』として件数を数え、結果のログに出す」</div></div>
@@ -690,10 +696,10 @@ a289e31 実装: 注文CSVを orders テーブルへ取り込む orders.import_cs
 d2af11f 仕様: status が cancelled の注文は取り込まず、対象外として数える
 d2a9151 テスト: cancelled の注文を対象外として数えるテストを足す
 cede1c5 実装: cancelled の注文を取り込まず、対象外として数える</pre>
-      <p class="foot">実際のコミット履歴。仕様 → テスト → 実装の順が2回並んでいます。仕様変更では、テストの時点で37件中10件が失敗し、実装のあと37件すべてが通りました。</p>
+      <p class="foot" style="margin-top:6px">実際のコミット履歴。仕様変更では、テストの時点で37件中10件が失敗し、実装のあと37件すべてが通りました。</p>
     </div>
   </div>
-  <div class="callout f">全体で人がしたのは、仕様24行を書くことと、3回の指示（質問への回答を含む）です。Claude Code の作業時間は合計で約5分、トークン消費量は約8.2万でした。このあと、差分を人がレビューします。</div>
+  <div class="callout f">この実例で人がしたのは、仕様を24行書くこと、質問に答えること、テストの結果を確かめることです。コードは書いていません。<br>Claude Code の作業時間は合計で約5分、トークン消費量は約8.2万でした。このあと、差分を人がレビューします。</div>
 </section>
 
 <!-- 23 導入の進め方 -->
@@ -741,11 +747,11 @@ cede1c5 実装: cancelled の注文を取り込まず、対象外として数え
   <div class="shade"></div>
   <div class="inner" style="max-width:900px">
     <p class="kicker">まとめ</p>
+    <p class="concl">AI駆動開発では、人は「仕様を書くこと」と「結果を確かめること」に工数を使います。</p>
     <ul class="summary">
-      <li>指示に書いた項目はそのとおりに作られ、書いていない項目はAIが決めます。</li>
-      <li>決まっていない点は、作る前にAIに質問させます。</li>
-      <li>トークン消費量は頼み方ではほとんど変わりません。減るのは、人が指示を出し直す手間です。</li>
-      <li>仕様をファイルに書き、テストとレビューで確かめます。</li>
+      <li>指示に書かなかった点は、AIが決めます。作らせる前に仕様を書き、決まっていない点はAIに質問させます。</li>
+      <li>仕様を書いても、トークン消費量はほとんど変わりません。減るのは、人が指示を出し直す工数です。</li>
+      <li>完成したかどうかは、AIの報告ではなく、テストとレビューで判断します。</li>
     </ul>
   </div>
 </section>
