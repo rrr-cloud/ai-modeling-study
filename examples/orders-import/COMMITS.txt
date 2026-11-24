@@ -1,0 +1,7 @@
+02cb347 初期状態: OrderRepository と仕様
+2331740 仕様: 質問への回答で決まったことを spec.md に追記する
+9f2196a テスト: 注文CSVの取り込みの受け入れ基準と検証ルールのテストを足す
+a289e31 実装: 注文CSVを orders テーブルへ取り込む orders.import_csv を足す
+d2af11f 仕様: status が cancelled の注文は取り込まず、対象外として数える
+d2a9151 テスト: cancelled の注文を対象外として数えるテストを足す
+cede1c5 実装: cancelled の注文を取り込まず、対象外として数える

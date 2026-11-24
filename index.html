@@ -264,12 +264,22 @@
   table.tok { font-size: 20px; margin: 0 0 16px; }
   table.tok td, table.tok th { padding: 11px 16px; }
   table.tok td:first-child { width: 44%; font-weight: 600; }
+  .ex .card { padding: 14px 20px; }
+  .ex .card h3 { font-size: 19px; margin-bottom: 4px; }
+  .ex .q2 { font-size: 16.5px; line-height: 1.6; }
+  .ex .lv { margin-bottom: 6px; }
+  .ex .rules li { font-size: 16.5px; margin-bottom: 4px; line-height: 1.5; }
+  .ex .card p { font-size: 16px; }
+  .ex + .callout { font-size: 19px; padding: 14px 24px; }
+  pre.gitlog { font-size: 14.5px; line-height: 1.9; white-space: pre-wrap; }
+  pre.spec { font-size: 12.5px; line-height: 1.34; padding: 12px 16px; }
   .vsteps .card { padding: 10px 20px; }
   .vsteps .card h3 { font-size: 19px; }
   .vsteps .card p { font-size: 15px; }
   .vsteps { gap: 8px; }
   .five .card { padding: 24px 10px; }
   .five b { font-size: 24px; }
+  .summary li { font-size: 25px; margin-bottom: 14px; }
 
   /* 話す内容メモ */
   #notes { display: none; position: fixed; left: 0; right: 0; bottom: 52px; max-height: 38vh; overflow: auto; background: rgba(8,12,24,.97); border-top: 1px solid var(--line); padding: 14px 26px 18px; z-index: 5; }
@@ -305,25 +315,6 @@
   </div>
 </section>
 
-<!-- 2 灯台 -->
-<section class="slide">
-  <p class="kicker">はじめに</p>
-  <div class="build">
-    <div>
-      <h2>表紙の灯台ができるまで</h2>
-      <p>Claude Code に日本語で指示を出し、Blender を操作させて作りました。右はその途中の様子です。</p>
-      <p class="f">人は Blender を操作していません。Claude Code が Blender 用の Python コードを書いて実行し、画像で確認して直しています。</p>
-    </div>
-    <div>
-      <div class="frames" data-frames>
-        <img src="images/lighthouse/f00.jpg" alt=""><img src="images/lighthouse/f01.jpg" alt=""><img src="images/lighthouse/f02.jpg" alt="">
-        <img src="images/lighthouse/f03.jpg" alt=""><img src="images/lighthouse/f04.jpg" alt=""><img src="images/lighthouse/f05.jpg" alt=""><img src="images/lighthouse/f06.jpg" alt="">
-      </div>
-      <div class="chips"><span class="chip">空の画面</span><span class="chip">島</span><span class="chip">塔</span><span class="chip">灯室・手すり</span><span class="chip">小屋・小道</span><span class="chip">海と夕空</span><span class="chip">明かり</span></div>
-    </div>
-  </div>
-</section>
-
 <!-- 3 今日の内容 -->
 <section class="slide">
   <p class="kicker">今日の内容</p>
@@ -332,7 +323,7 @@
     <li class="f">AIが3Dモデルを作るしくみ</li>
     <li class="f">指示の書き方で、結果がどう変わるか</li>
     <li class="f">ポリゴン数とトークン消費量</li>
-    <li class="f">コードを書く仕事での、仕様駆動開発の進め方</li>
+    <li class="f">仕様駆動開発の進め方</li>
   </ol>
 </section>
 
@@ -347,42 +338,6 @@
     <div class="step f"><div class="arrow">→</div><div class="box"><b>Blender</b><span>受け取ったコードを実行し、<br>形を作る</span></div></div>
   </div>
   <div class="loop f">Claude Code は、Blender から画像や数値を受け取って結果を確認し、問題があればコードを書き直します。</div>
-</section>
-
-<!-- 5 コード -->
-<section class="slide">
-  <p class="kicker">しくみ</p>
-  <h2>AIが実際に書いたコード（抜粋）</h2>
-  <div class="grid2 codegrid">
-    <pre class="code">H=0.095; RT=0.040; RB=0.034; WALL=0.004; FLOOR=0.006; SEG=96
-def rout(z):
-    t=max(0,min(1,z/H)); return RB+(RT-RB)*(t**0.8)
-prof=[]  # (r,z,tag) tag: &#x27;o&#x27; outer,&#x27;i&#x27; inner
-...
-# rim semicircle r=2mm (wall 4mm)
-zc=H-0.002; rc=rout(zc)-0.002
-for i in range(1,12):
-    a=math.pi*i/12
-    prof.append((rc+0.002*math.cos(a), zc+0.002*math.sin(a), ...))
-...
-bm=bmesh.new()
-for r,z,t in prof:
-    rings.append([bm.verts.new((r*math.cos(2*math.pi*j/SEG),
-                                r*math.sin(2*math.pi*j/SEG), z))
-                  for j in range(SEG)])
-...
-# cut the glaze line at 1/3 height
-zl=H/3
-bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
-    <div>
-      <p>指示Cのマグカップを作ったときに、Claude Code が書いた Python コードの一部です。</p>
-      <ul class="rules">
-        <li class="f">寸法は変数で持っています（高さ <code>H=0.095</code>、口の半径 <code>RT=0.040</code>、壁の厚さ <code>WALL=0.004</code>）。</li>
-        <li class="f">断面の点の並び（<code>prof</code>）を、円周方向に <code>SEG=96</code> 分割して回し、本体を作っています。</li>
-        <li class="f">高さの 1/3 で面を切り、上下で材質を分けています。</li>
-      </ul>
-    </div>
-  </div>
 </section>
 
 <!-- 6 役割分担 -->
@@ -441,6 +396,42 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
 <section class="slide vslide">
   <video src="videos/prompt_c.mp4" poster="videos/prompt_c.jpg" muted playsinline preload="auto" aria-label="指示C 仕様として書いた場合の動画"></video>
   <button class="replay">↻ もう一度</button>
+</section>
+
+<!-- 5 コード -->
+<section class="slide">
+  <p class="kicker">指示 C</p>
+  <h2>指示Cで、AIが書いたコード（抜粋）</h2>
+  <div class="grid2 codegrid">
+    <pre class="code">H=0.095; RT=0.040; RB=0.034; WALL=0.004; FLOOR=0.006; SEG=96
+def rout(z):
+    t=max(0,min(1,z/H)); return RB+(RT-RB)*(t**0.8)
+prof=[]  # (r,z,tag) tag: &#x27;o&#x27; outer,&#x27;i&#x27; inner
+...
+# rim semicircle r=2mm (wall 4mm)
+zc=H-0.002; rc=rout(zc)-0.002
+for i in range(1,12):
+    a=math.pi*i/12
+    prof.append((rc+0.002*math.cos(a), zc+0.002*math.sin(a), ...))
+...
+bm=bmesh.new()
+for r,z,t in prof:
+    rings.append([bm.verts.new((r*math.cos(2*math.pi*j/SEG),
+                                r*math.sin(2*math.pi*j/SEG), z))
+                  for j in range(SEG)])
+...
+# cut the glaze line at 1/3 height
+zl=H/3
+bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
+    <div>
+      <p>指示Cを頼んだときに、Claude Code が書いて Blender で実行した Python コードの一部です（動画とは別の回のもの）。</p>
+      <ul class="rules">
+        <li class="f">寸法は変数で持っています（高さ <code>H=0.095</code>、口の半径 <code>RT=0.040</code>、壁の厚さ <code>WALL=0.004</code>）。</li>
+        <li class="f">断面の点の並び（<code>prof</code>）を、円周方向に <code>SEG=96</code> 分割して回し、本体を作っています。</li>
+        <li class="f">高さの 1/3 で面を切り、上下で材質を分けています。</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
 <!-- 12 動画D -->
@@ -505,7 +496,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
 <!-- 17 トークン：頼み方 -->
 <section class="slide">
   <p class="kicker">トークン消費量</p>
-  <h2>頼み方によるトークン消費量の違い</h2>
+  <h2>頼み方で変わるのは、人の手間</h2>
   <p class="sub" style="margin:-14px 0 14px">トークンは、AIが読み書きした文章量の単位です。料金や利用上限はトークン消費量で決まります。どれも、指示Cと同じ仕様のマグカップができるまでの量です。</p>
   <table class="tok">
     <tr><th>頼み方</th><th>トークン消費量</th><th>ツールの呼び出し</th><th>人が指示した回数</th></tr>
@@ -514,7 +505,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
     <tr><td>仕様を書いて1回で頼む（指示C、2回試行）</td><td>6.4万 ／ 5.7万</td><td>10回 ／ 4回</td><td>1回</td></tr>
     <tr><td>指示C＋完成の基準（2回試行）</td><td>5.5万 ／ 5.5万</td><td>3回 ／ 3回</td><td>1回</td></tr>
   </table>
-  <div class="callout f">頼み方による差は小さく、同じ指示でも回によって 0.7万ほど変わりました。はっきり違うのは、人が結果を見て指示を出した回数です。</div>
+  <div class="callout f">トークン消費量は、頼み方ではほとんど変わりませんでした（同じ指示でも回によって 0.7万ほど変わります）。<br>変わったのは人の手間です。仕様を書いて頼むと、結果を見て指示を出し直す回数が 3回から 1回に減りました。</div>
 </section>
 
 <!-- 18 トークンと呼び出し回数 -->
@@ -582,38 +573,127 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
   <div class="callout f">マグカップでいえば、寸法が「入力と出力」、ポリゴン数の上限が「制約」、「画像を1回見て寸法と色分けが合っていれば完成」が「受け入れ基準」にあたります。<br>決めきれない点は、作る前にAIに質問させます。</div>
 </section>
 
-<!-- 22 仕様駆動開発 -->
+<!-- SDD 概要 -->
 <section class="slide">
   <p class="kicker">仕様駆動開発</p>
   <h2>仕様駆動開発の進め方</h2>
   <div class="grid2" style="align-items:start">
     <div class="vsteps">
       <div class="card f"><h3>1. 仕様をファイルに書く</h3><p>前のページの5項目を、リポジトリの中の Markdown に書きます。</p></div>
-      <div class="card f"><h3>2. 実装の前に、計画と質問を出させる</h3><p>変更するファイルと手順をAIに書かせ、不明点は質問させます。ここで認識のずれを直します。</p></div>
-      <div class="card f"><h3>3. 小さな単位で実装させる</h3><p>1回の変更を、レビューできる大きさの差分に収めます。</p></div>
-      <div class="card f"><h3>4. テストとレビューで確かめる</h3><p>受け入れ基準をテストにして実行させ、差分は人がレビューします。</p></div>
-      <div class="card f"><h3>5. 直すときは仕様から直す</h3><p>仕様もコードと一緒にコミットし、レビューの対象にします。</p></div>
+      <div class="card f"><h3>2. 実装の前に、計画と質問を出させる</h3><p>変更するファイルと手順をAIに書かせ、不明点は質問させます。</p></div>
+      <div class="card f"><h3>3. テストを先に書かせる</h3><p>受け入れ基準をテストにし、実装前に失敗することを確かめます。</p></div>
+      <div class="card f"><h3>4. 実装させ、テストとレビューで確かめる</h3><p>テストが通ることを確認し、差分は人がレビューします。</p></div>
+      <div class="card f"><h3>5. 直すときは仕様から直す</h3><p>仕様 → テスト → 実装の順に直し、仕様もコミットします。</p></div>
     </div>
-<pre class="spec"><span class="h"># 注文CSVの取り込み 仕様（spec.md）</span>
+    <div>
+<pre class="spec"><span class="h"># 注文CSVの取り込み 仕様</span>
+
 <span class="h">## 目的</span>
-基幹システムの注文CSVを、毎晩DBへ取り込む
+基幹システムが出力する注文CSVを、毎晩DBへ取り込む。
 
 <span class="h">## 入力 / 出力</span>
-- 入力: orders_YYYYMMDD.csv（UTF-8、ヘッダーあり）
-- 出力: orders テーブルへ upsert、結果をログに出す
+- 入力: `orders_YYYYMMDD.csv`（UTF-8、ヘッダーあり）
+  - 列: order_id, customer_id, amount, status, ordered_at
+- 出力: orders テーブルへ upsert し、結果（取り込んだ件数・スキップした件数）をログに出す
+- 呼び出し方: `python -m orders.import_csv &lt;CSVのパス&gt; &lt;DBのパス&gt;`
 
 <span class="h">## 制約</span>
 - 10万行を5分以内で処理する
-- 既存の OrderRepository を使う。スキーマは変えない
+- 既存の `OrderRepository` を使う。スキーマは変えない
+- 標準ライブラリのみ使う
 
 <span class="h">## やらないこと</span>
-- 画面の変更、ほかのテーブルの更新
+- ほかのテーブルの更新
+- `OrderRepository` の既存メソッドの挙動の変更
 
 <span class="h">## 受け入れ基準</span>
 - 不正な行はスキップし、行番号をログに出す
 - 同じファイルを2回流しても件数が変わらない
 - 上の2点を確認するテストが通る</pre>
+      <p class="foot" style="margin-top:6px">実例で使った仕様（spec.md、人が書いた24行）</p>
+    </div>
   </div>
+</section>
+
+<!-- SDD 実例1 -->
+<section class="slide">
+  <p class="kicker">仕様駆動開発 ・ 実例</p>
+  <h2>実例① 実装の前に、計画と質問を出させる</h2>
+  <div class="grid2 ex" style="align-items:start">
+    <div>
+      <div class="card f"><span class="lv">Claude Code への指示</span><div class="q2">「spec.md の仕様を実装したい。まだコードは書かないで。先に次の2つを出して。<br>1. 計画: 追加・変更するファイルと、作業の手順<br>2. 質問: 仕様で決まっていない点や、あいまいな点」</div></div>
+      <div class="card f" style="margin-top:12px"><h3>返ってきた計画</h3><p>追加するのは <code>orders/import_csv.py</code> と <code>tests/test_import_csv.py</code>。既存の <code>repository.py</code> は変更しない。テストを先に書く。</p></div>
+    </div>
+    <div class="card f"><h3>返ってきた質問（10件から抜粋）</h3>
+      <ul class="rules">
+        <li>「不正な行」の定義は何か。amount の負の数や小数、status に許される値、日付の形式は。</li>
+        <li>同じ order_id がファイル内に2回出たら、どうするか。</li>
+        <li>途中で失敗したとき、そこまでの分は残すか。</li>
+        <li>スキップした行があったとき、終了コードは何にするか。</li>
+        <li>DB ファイルが無いときは、新しく作るか。</li>
+      </ul>
+      <p style="margin-top:8px">質問にはそれぞれ案が付いていて、人は「案のとおり」か、違う点だけを答えました。</p>
+    </div>
+  </div>
+  <div class="callout f">回答で決まったことは、Claude Code が spec.md に追記してコミットしました（39行）。コードを書く前に、決まっていない点が10件見つかったことになります。</div>
+</section>
+
+<!-- SDD 実例2 -->
+<section class="slide">
+  <p class="kicker">仕様駆動開発 ・ 実例</p>
+  <h2>実例② テストを先に書かせてから、実装させる</h2>
+  <div class="grid2 codegrid">
+    <pre class="code">class AcceptanceTest(ImportCsvTestCase):
+    &quot;&quot;&quot;spec.md の受け入れ基準。&quot;&quot;&quot;
+
+    def test_invalid_rows_are_skipped_and_line_numbers_are_logged(self):
+        path = self.write_csv([
+            HEADER,
+            &quot;A1,C1,100,paid,2026-11-01&quot;,      # 2 行目
+            &quot;A2,C2,abc,paid,2026-11-01&quot;,      # 3 行目: amount が不正
+            &quot;A3,C3,300,pending,2026-11-02&quot;,   # 4 行目
+            &quot;A4,,400,paid,2026-11-02&quot;,        # 5 行目: customer_id が空
+        ])
+        with self.assertLogs(LOGGER, level=&quot;INFO&quot;) as logs:
+            result = import_file(path, self.repo)
+
+        self.assertEqual(result.imported, 2)
+        self.assertEqual(result.skipped, 2)
+        ...
+        self.assertIn(&quot;3 行目&quot;, warnings[0])
+        self.assertIn(&quot;5 行目&quot;, warnings[1])</pre>
+    <div>
+      <p>左は、受け入れ基準「不正な行はスキップし、行番号をログに出す」を Claude Code がテストにしたものです。</p>
+      <ul class="rules">
+        <li class="f">テスト（319行）を先にコミットし、実行して失敗することを確認しました。</li>
+        <li class="f">実装（163行）のあと、29件のテストがすべて通りました。既存の <code>OrderRepository</code> は変更していません。</li>
+        <li class="f">制約の「10万行を5分以内」は、計測で 0.65秒でした。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SDD 実例3 -->
+<section class="slide">
+  <p class="kicker">仕様駆動開発 ・ 実例</p>
+  <h2>実例③ 仕様変更は、仕様から直す</h2>
+  <div class="grid2 ex" style="align-items:start">
+    <div>
+      <div class="card f"><span class="lv">仕様変更の依頼</span><div class="q2">「status が cancelled の注文は取り込まない。不正な行とは別に『対象外』として件数を数え、結果のログに出す」</div></div>
+      <div class="card f" style="margin-top:12px"><h3>Claude Code が報告した気づき</h3><p>「一度 paid で入った注文は、基幹システム側でキャンセルされても、DB では元の状態のまま残ります。DB を見てもキャンセル済みかどうかは分かりません」</p></div>
+    </div>
+    <div class="f">
+<pre class="code gitlog">02cb347 初期状態: OrderRepository と仕様
+2331740 仕様: 質問への回答で決まったことを spec.md に追記する
+9f2196a テスト: 注文CSVの取り込みの受け入れ基準と検証ルールのテストを足す
+a289e31 実装: 注文CSVを orders テーブルへ取り込む orders.import_csv を足す
+d2af11f 仕様: status が cancelled の注文は取り込まず、対象外として数える
+d2a9151 テスト: cancelled の注文を対象外として数えるテストを足す
+cede1c5 実装: cancelled の注文を取り込まず、対象外として数える</pre>
+      <p class="foot">実際のコミット履歴。仕様 → テスト → 実装の順が2回並んでいます。仕様変更では、テストの時点で37件中10件が失敗し、実装のあと37件すべてが通りました。</p>
+    </div>
+  </div>
+  <div class="callout f">全体で人がしたのは、仕様24行を書くことと、3回の指示（質問への回答を含む）です。Claude Code の作業時間は合計で約5分、トークン消費量は約8.2万でした。このあと、差分を人がレビューします。</div>
 </section>
 
 <!-- 23 導入の進め方 -->
@@ -662,9 +742,10 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
   <div class="inner" style="max-width:900px">
     <p class="kicker">まとめ</p>
     <ul class="summary">
-      <li>AIは、指示を受けてコードを書き、ソフトを操作して物を作れるようになりました。</li>
       <li>指示に書いた項目はそのとおりに作られ、書いていない項目はAIが決めます。</li>
-      <li>何を作るかを仕様として書き、テストとレビューで確かめることが、人の仕事の中心になります。</li>
+      <li>決まっていない点は、作る前にAIに質問させます。</li>
+      <li>トークン消費量は頼み方ではほとんど変わりません。減るのは、人が指示を出し直す手間です。</li>
+      <li>仕様をファイルに書き、テストとレビューで確かめます。</li>
     </ul>
   </div>
 </section>
@@ -675,7 +756,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
 
 <div id="bar">
   <button id="prev" aria-label="前へ">← 前</button>
-  <span id="pageNo">1 / 25</span>
+  <span id="pageNo">1 / 27</span>
   <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
   <button id="fsBtn">全画面 (F)</button>

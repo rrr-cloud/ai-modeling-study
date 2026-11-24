@@ -1,6 +1,6 @@
 # AIによる3Dモデリングと AI駆動開発
 
-Claude Code と Blender MCP の実例と、仕様駆動開発の進め方を紹介する、開発者向けの勉強会資料です（約11分）。
+Claude Code と Blender MCP の実例と、仕様駆動開発の進め方を紹介する、開発者向けの勉強会資料です。
 
 ## 見かた
 
@@ -25,6 +25,7 @@ GitHub Pages で公開しています。ブラウザで開くだけで見られ�
 - 「AIが実際に書いたコード」は、この頼み直した指示Cで Claude Code が実行したコードの抜粋です（`...` は省略した部分）。
 - 「先に質問させる」は、「コップを作って。作り始める前に、決まっていない点や不明な点があれば質問して」と頼み、返ってきた質問に、資料の作成者が指示Cと同じ内容で答えたものです。質問の文は要約しています。
 - グラフと表のトークン消費量は、上の頼み直しを含む19回分です。指示Cは2回分（63,772・56,913）あります。
+- 仕様駆動開発の実例（実例①〜③）は、`examples/orders-import/` のリポジトリで実際に行った記録です。人が書いたのは最初の `spec.md`（24行）と既存コード（`orders/repository.py` とそのテスト）、3回の指示（計画と質問の依頼、質問への回答、仕様変更）です。それ以外の仕様の追記・テスト・実装は Claude Code が書きました。コミットの順は `COMMITS.txt` にあります。テストの件数と10万行の所要時間（0.65秒）は、資料の作成者も実行して確かめています。差分の内容のレビューはしていません。
 - GitHub Copilot のクレジットの単位・単価・プランの内容は、2026年11月時点の GitHub Docs（Models and pricing、Usage-based billing for individuals）によります。
 - GitHub Copilot の課金方式は、GitHub の発表（2026年4月27日「GitHub Copilot is moving to usage-based billing」）によります。
 
@@ -34,3 +35,4 @@ GitHub Pages で公開しています。ブラウザで開くだけで見られ�
 - `script.html` / `script-data.js` … 発表原稿
 - `videos/` … 4本の動画（1920×1080）と結果の画像
 - `images/` … 表紙の灯台と、その作成途中の画像
+- `examples/orders-import/` … 仕様駆動開発の実例で使ったリポジトリ（`python -m unittest -q` でテストを実行できます）
