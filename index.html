@@ -578,8 +578,6 @@
   <span id="pageNo">1 / 22</span>
   <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
-  <button id="notesBtn">話す内容メモ (N)</button>
-  <a href="script.html" target="_blank" rel="noopener">発表原稿</a>
   <button id="fsBtn">全画面 (F)</button>
   <span class="hint">← → で進む</span>
 </div>
@@ -696,7 +694,6 @@
 
   document.getElementById('prev').onclick = prev;
   document.getElementById('next').onclick = next;
-  document.getElementById('notesBtn').onclick = toggleNotes;
   document.getElementById('fsBtn').onclick = toggleFs;
   Array.prototype.forEach.call(document.querySelectorAll('.replay'), function (b) {
     b.onclick = function (e) { e.stopPropagation(); var v = b.parentNode.querySelector('video'); v.currentTime = 0; v.play(); };
@@ -708,7 +705,6 @@
     else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); prev(); }
     else if (k === 'Home') show(0, false);
     else if (k === 'End') show(slides.length - 1, true);
-    else if (k === 'n' || k === 'N') toggleNotes();
     else if (k === 'f' || k === 'F') toggleFs();
   });
 
@@ -730,7 +726,6 @@
   show(isNaN(start) ? 0 : start - 1, atEnd);
   var m = /[?&]step=(\d+)/.exec(location.search);
   if (m) { step = Math.min(+m[1], frags(cur).length); applySteps(); }
-  if (/[?&]notes/.test(location.search)) toggleNotes();
 })();
 </script>
 </body>
