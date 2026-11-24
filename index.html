@@ -241,6 +241,36 @@
   .cop { margin-bottom: 20px; }
   .save .card:nth-child(3) { grid-row: auto; }
 
+  /* 開発者向けの版で足した見た目 */
+  pre.code { font-size: 14px; line-height: 1.5; padding: 16px 18px; white-space: pre; overflow: hidden; }
+  pre.spec { font-size: 15px; line-height: 1.5; padding: 16px 20px; }
+  .codegrid { grid-template-columns: 1.25fr 1fr; align-items: start; }
+  .codegrid p { font-size: 19px; }
+  .codegrid .rules li { font-size: 18px; margin-bottom: 12px; }
+  code { font-family: "BIZ UDGothic", Consolas, monospace; background: var(--code); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: .92em; }
+  .ask { grid-template-columns: 1fr 1fr; align-items: start; }
+  .ask .card { padding: 14px 20px; }
+  .ask .card h3 { font-size: 19px; margin-bottom: 4px; }
+  .ask .q2 { font-size: 18px; line-height: 1.6; }
+  .ask .lv { margin-bottom: 6px; }
+  .qs { margin: 0; padding-left: 1.3em; columns: 2; }
+  .qs li { font-size: 16.5px; line-height: 1.7; color: var(--ink); }
+  .shot { width: 100%; border-radius: 14px; border: 1px solid var(--line); display: block; }
+  .poly .chars { font-size: 30px; font-weight: 700; }
+  .poly .chars small { font-size: 15px; color: var(--sub); font-weight: 600; margin-left: 6px; }
+  .poly { margin-bottom: 14px; }
+  .poly img { aspect-ratio: 1200/620 !important; }
+  .poly + .callout { font-size: 19.5px; padding: 14px 24px; }
+  table.tok { font-size: 20px; margin: 0 0 16px; }
+  table.tok td, table.tok th { padding: 11px 16px; }
+  table.tok td:first-child { width: 44%; font-weight: 600; }
+  .vsteps .card { padding: 10px 20px; }
+  .vsteps .card h3 { font-size: 19px; }
+  .vsteps .card p { font-size: 15px; }
+  .vsteps { gap: 8px; }
+  .five .card { padding: 24px 10px; }
+  .five b { font-size: 24px; }
+
   /* 話す内容メモ */
   #notes { display: none; position: fixed; left: 0; right: 0; bottom: 52px; max-height: 38vh; overflow: auto; background: rgba(8,12,24,.97); border-top: 1px solid var(--line); padding: 14px 26px 18px; z-index: 5; }
   body.show-notes #notes { display: block; }
@@ -282,7 +312,7 @@
     <div>
       <h2>表紙の灯台ができるまで</h2>
       <p>Claude Code に日本語で指示を出し、Blender を操作させて作りました。右はその途中の様子です。</p>
-      <p class="f">人は Blender を操作していません。形を作るのも、画像で確認して直すのも Claude Code が行いました。</p>
+      <p class="f">人は Blender を操作していません。Claude Code が Blender 用の Python コードを書いて実行し、画像で確認して直しています。</p>
     </div>
     <div>
       <div class="frames" data-frames>
@@ -301,8 +331,8 @@
   <ol class="agenda">
     <li class="f">AIが3Dモデルを作るしくみ</li>
     <li class="f">指示の書き方で、結果がどう変わるか</li>
-    <li class="f">トークン消費量と、その抑え方</li>
-    <li class="f">AI駆動開発・仕様駆動開発の進め方</li>
+    <li class="f">ポリゴン数とトークン消費量</li>
+    <li class="f">コードを書く仕事での、仕様駆動開発の進め方</li>
   </ol>
 </section>
 
@@ -312,28 +342,64 @@
   <h2>AIが3Dモデルを作るしくみ</h2>
   <div class="flow">
     <div class="step f"><div class="box"><b>利用者</b><span>日本語で指示を出す</span></div></div>
-    <div class="step f"><div class="arrow">→</div><div class="box"><b>Claude Code</b><span>指示を読み、手順を考えて<br>外部のソフトを操作するAI</span></div></div>
-    <div class="step f"><div class="arrow">→</div><div class="box"><b>MCP</b><span>AIと外部のソフトやサービスを<br>つなぐ共通の規格</span></div></div>
-    <div class="step f"><div class="arrow">→</div><div class="box"><b>Blender</b><span>無料の3Dソフト。<br>ここで形が作られる</span></div></div>
+    <div class="step f"><div class="arrow">→</div><div class="box"><b>Claude Code</b><span>指示を読み、<br>Python コードを書く</span></div></div>
+    <div class="step f"><div class="arrow">→</div><div class="box"><b>MCP</b><span>AIが外部のソフトの機能を<br>呼び出すための共通の規格</span></div></div>
+    <div class="step f"><div class="arrow">→</div><div class="box"><b>Blender</b><span>受け取ったコードを実行し、<br>形を作る</span></div></div>
   </div>
-  <div class="loop f">Claude Code は、できた物の画像を自分で確認し、問題があれば直します。</div>
+  <div class="loop f">Claude Code は、Blender から画像や数値を受け取って結果を確認し、問題があればコードを書き直します。</div>
 </section>
 
-<!-- 5 役割分担 -->
+<!-- 5 コード -->
+<section class="slide">
+  <p class="kicker">しくみ</p>
+  <h2>AIが実際に書いたコード（抜粋）</h2>
+  <div class="grid2 codegrid">
+    <pre class="code">H=0.095; RT=0.040; RB=0.034; WALL=0.004; FLOOR=0.006; SEG=96
+def rout(z):
+    t=max(0,min(1,z/H)); return RB+(RT-RB)*(t**0.8)
+prof=[]  # (r,z,tag) tag: &#x27;o&#x27; outer,&#x27;i&#x27; inner
+...
+# rim semicircle r=2mm (wall 4mm)
+zc=H-0.002; rc=rout(zc)-0.002
+for i in range(1,12):
+    a=math.pi*i/12
+    prof.append((rc+0.002*math.cos(a), zc+0.002*math.sin(a), ...))
+...
+bm=bmesh.new()
+for r,z,t in prof:
+    rings.append([bm.verts.new((r*math.cos(2*math.pi*j/SEG),
+                                r*math.sin(2*math.pi*j/SEG), z))
+                  for j in range(SEG)])
+...
+# cut the glaze line at 1/3 height
+zl=H/3
+bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
+    <div>
+      <p>指示Cのマグカップを作ったときに、Claude Code が書いた Python コードの一部です。</p>
+      <ul class="rules">
+        <li class="f">寸法は変数で持っています（高さ <code>H=0.095</code>、口の半径 <code>RT=0.040</code>、壁の厚さ <code>WALL=0.004</code>）。</li>
+        <li class="f">断面の点の並び（<code>prof</code>）を、円周方向に <code>SEG=96</code> 分割して回し、本体を作っています。</li>
+        <li class="f">高さの 1/3 で面を切り、上下で材質を分けています。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 6 役割分担 -->
 <section class="slide">
   <p class="kicker">AI駆動開発</p>
   <h2>AI駆動開発で変わる役割分担</h2>
   <table>
     <tr><th></th><th>これまで</th><th>AI駆動開発</th></tr>
-    <tr class="f"><td>手を動かす</td><td>人（操作やプログラムを覚える）</td><td>AI</td></tr>
+    <tr class="f"><td>コードを書く</td><td>人</td><td>AI</td></tr>
     <tr class="f"><td>何を作るか決める</td><td>人</td><td>人</td></tr>
     <tr class="f"><td>結果を確かめる</td><td>人</td><td>AIも確認するが、最終確認は人</td></tr>
-    <tr class="f"><td>試作にかかる時間</td><td>操作を覚える時間が必要</td><td>数分。作り直しも容易</td></tr>
+    <tr class="f"><td>試作にかかる時間</td><td>数時間〜数日</td><td>数分。作り直しも容易</td></tr>
   </table>
   <div class="callout f">人の仕事の中心は、何を作るかを決めて伝えることと、結果を確かめることに移ります。</div>
 </section>
 
-<!-- 6 指示を変えて比べる -->
+<!-- 7 指示を変えて比べる -->
 <section class="slide">
   <p class="kicker">指示による違い</p>
   <h2>指示の書き方を変えて比べる</h2>
@@ -346,13 +412,13 @@
   </div>
 </section>
 
-<!-- 7 動画A -->
+<!-- 8 動画A -->
 <section class="slide vslide">
   <video src="videos/prompt_a.mp4" poster="videos/prompt_a.jpg" muted playsinline preload="auto" aria-label="指示A「コップを作って」の動画"></video>
   <button class="replay">↻ もう一度</button>
 </section>
 
-<!-- 8 指示Aを4回 -->
+<!-- 9 指示Aを4回 -->
 <section class="slide">
   <p class="kicker">指示 A</p>
   <h2>指示Aを4回頼んだ結果</h2>
@@ -362,28 +428,28 @@
     <div class="col"><img src="videos/a_run3.jpg" alt="3回目：白い陶器のコップ"><div class="meta"><div class="what">3回目：白い陶器<br>高さ約10cm・直径約9cm</div></div></div>
     <div class="col"><img src="videos/a_run4.jpg" alt="4回目：白い陶器のコップ"><div class="meta"><div class="what">4回目：白い陶器<br>高さ約10cm・直径約9cm</div></div></div>
   </div>
-  <div class="callout f">この4回はすべて白い陶器でしたが、さらに試すとガラスのコップになることもありました。<br>指示に書いていない素材や大きさは、AIがその都度決めています。</div>
+  <div class="callout f">この4回はすべて取っ手つきの白い陶器でしたが、さらに試すと、ガラスのコップや取っ手のないコップになることもありました。<br>指示に書いていない素材や形は、AIがその都度決めています。</div>
 </section>
 
-<!-- 9 動画B -->
+<!-- 10 動画B -->
 <section class="slide vslide">
   <video src="videos/prompt_b.mp4" poster="videos/prompt_b.jpg" muted playsinline preload="auto" aria-label="指示B「白い陶器のマグカップ」の動画"></video>
   <button class="replay">↻ もう一度</button>
 </section>
 
-<!-- 10 動画C -->
+<!-- 11 動画C -->
 <section class="slide vslide">
   <video src="videos/prompt_c.mp4" poster="videos/prompt_c.jpg" muted playsinline preload="auto" aria-label="指示C 仕様として書いた場合の動画"></video>
   <button class="replay">↻ もう一度</button>
 </section>
 
-<!-- 11 動画D -->
+<!-- 12 動画D -->
 <section class="slide vslide">
   <video src="videos/prompt_d.mp4" poster="videos/prompt_d.jpg" muted playsinline preload="auto" aria-label="指示C＋追加の修正の動画"></video>
   <button class="replay">↻ もう一度</button>
 </section>
 
-<!-- 12 比較 -->
+<!-- 13 比較 -->
 <section class="slide">
   <p class="kicker">指示による違い</p>
   <h2>マグカップの結果の比較</h2>
@@ -396,7 +462,7 @@
   <div class="callout f">指示に書いた項目は、そのとおりに作られます。足りなかった点は、できた物を見てから追加で頼めば直せます。</div>
 </section>
 
-<!-- 13 時計 -->
+<!-- 14 時計 -->
 <section class="slide">
   <p class="kicker">指示による違い</p>
   <h2>別の題材：時計</h2>
@@ -408,58 +474,87 @@
   <p class="foot f">指示Aでは時計の種類から、指示Bでは細部を、AIが決めています。</p>
 </section>
 
-<!-- 14 トークン：頼み方による違い -->
+<!-- 15 先に質問させる -->
+<section class="slide">
+  <p class="kicker">指示による違い</p>
+  <h2>決まっていない点を、AIに質問させる</h2>
+  <div class="grid2 ask">
+    <div>
+      <div class="card f"><span class="lv">指示</span><div class="q2">「コップを作って。作り始める前に、決まっていない点や不明な点があれば質問して」</div></div>
+      <div class="card f" style="margin-top:12px"><h3>AIからの質問</h3>
+        <ol class="qs"><li>種類（グラス、マグカップなど）</li><li>大きさ</li><li>材質と色</li><li>中身を入れるか</li><li>用途（ポリゴン数を抑えるか）</li><li>装飾</li></ol>
+      </div>
+      <div class="card f" style="margin-top:12px"><p>指示Cと同じ内容で答えると、寸法も色分けも指示Cと同じ仕上がりになりました。トークン消費量は約6.1万で、指示Cとほぼ同じです。</p></div>
+    </div>
+    <div><img src="videos/ask_result.jpg" alt="質問に答えて作らせたマグカップ" class="shot"></div>
+  </div>
+</section>
+
+<!-- 16 ポリゴン数 -->
+<section class="slide">
+  <p class="kicker">ポリゴン数</p>
+  <h2>ポリゴン数は、AIが書くコードで決まる</h2>
+  <div class="cmp3 poly">
+    <div class="col"><img src="videos/poly_a.jpg" alt="指示Aのワイヤー表示"><div class="meta"><div class="chars">1,536<small>三角形</small></div><div class="what">指示A（取っ手なしのコップ）</div></div></div>
+    <div class="col"><img src="videos/poly_c.jpg" alt="指示Cのワイヤー表示"><div class="meta"><div class="chars">23,540<small>三角形</small></div><div class="what">指示C（円周96分割、縁や底の丸みも細かく分割）</div></div></div>
+    <div class="col"><img src="videos/poly_l.jpg" alt="上限を指定したワイヤー表示"><div class="meta"><div class="chars">732<small>三角形</small></div><div class="what">指示C＋「ゲームで使うので、三角形で1,000以下にして」</div></div></div>
+  </div>
+  <div class="callout f">AIは、指定がなければ見た目のなめらかさを優先して細かく分割します。上限を指示に書くと、分割数を減らしたコードを書きます。<br>同じ仕様でも、先に質問させて作ったときは 8,852 で、回によっても変わります。</div>
+</section>
+
+<!-- 17 トークン：頼み方 -->
 <section class="slide">
   <p class="kicker">トークン消費量</p>
   <h2>頼み方によるトークン消費量の違い</h2>
-  <p class="sub" style="margin:-14px 0 16px">トークンは、AIが読み書きした文章量の単位です。料金や利用上限はトークン消費量で決まります。</p>
-  <div class="cmp4 rounds">
-    <div class="col"><img src="videos/e_round1.jpg" alt="1回目：白いマグ"><div class="meta"><div class="chars">5.2<small>万</small></div><div class="what">1回目「コップを作って」</div></div></div>
-    <div class="col"><img src="videos/e_round2.jpg" alt="2回目：藍と素焼きの2色"><div class="meta"><div class="chars">5.6<small>万（累計）</small></div><div class="what">2回目　色を指定</div></div></div>
-    <div class="col"><img src="videos/e_round3.jpg" alt="3回目：寸法を指定"><div class="meta"><div class="chars">6.2<small>万（累計）</small></div><div class="what">3回目　寸法と形を指定</div></div></div>
-    <div class="col vs"><img src="videos/prompt_c.jpg" alt="指示C：1回で頼む"><div class="meta"><div class="chars">6.4<small>万</small></div><div class="what">指示C（仕様を書いて1回で頼む）</div></div></div>
-  </div>
-  <div class="callout f">同じ仕上がりになるまでのトークン消費量は、3回に分けて頼んでも、仕様を書いて1回で頼んでも、ほぼ同じでした。違いは、人が結果を見て指示を出した回数です。</div>
+  <p class="sub" style="margin:-14px 0 14px">トークンは、AIが読み書きした文章量の単位です。料金や利用上限はトークン消費量で決まります。どれも、指示Cと同じ仕様のマグカップができるまでの量です。</p>
+  <table class="tok">
+    <tr><th>頼み方</th><th>トークン消費量</th><th>ツールの呼び出し</th><th>人が指示した回数</th></tr>
+    <tr><td>ひとことで始めて、3回に分けて頼む</td><td>6.2万</td><td>14回</td><td>3回</td></tr>
+    <tr><td>先に質問させる</td><td>6.1万</td><td>6回</td><td>2回</td></tr>
+    <tr><td>仕様を書いて1回で頼む（指示C、2回試行）</td><td>6.4万 ／ 5.7万</td><td>10回 ／ 4回</td><td>1回</td></tr>
+    <tr><td>指示C＋完成の基準（2回試行）</td><td>5.5万 ／ 5.5万</td><td>3回 ／ 3回</td><td>1回</td></tr>
+  </table>
+  <div class="callout f">頼み方による差は小さく、同じ指示でも回によって 0.7万ほど変わりました。はっきり違うのは、人が結果を見て指示を出した回数です。</div>
 </section>
 
-<!-- 15 トークンと操作の回数 -->
+<!-- 18 トークンと呼び出し回数 -->
 <section class="slide">
   <p class="kicker">トークン消費量</p>
   <h2>トークン消費量は、AIの作業量で増える</h2>
   <div class="opgrid">
     <div class="opleft">
       <div class="card f">
-        <h3>AIの操作1回の中身</h3>
-        <ol class="cycle"><li>それまでのやり取りをすべて読む</li><li>次の操作（コード）を書く</li><li>結果（文字や画像）を受け取る</li></ol>
-        <p>受け取った結果はやり取りに加わるので、操作を重ねるほど、毎回読む量が増えます。</p>
+        <h3>ツールを1回呼び出すたびに</h3>
+        <ol class="cycle"><li>それまでのやり取りをすべて読む</li><li>次に実行するコードを書く</li><li>結果（文字や画像）を受け取る</li></ol>
+        <p>受け取った結果はやり取りに加わるので、呼び出しを重ねるほど、毎回読む量が増えます。</p>
       </div>
       <div class="card f nums">
-        <div><span class="n">約4.5万</span><p>何もしなくても毎回かかる分</p></div>
-        <div><span class="n">約1,500</span><p>操作1回あたりの増加（平均）</p></div>
+        <div><span class="n">約4.3万</span><p>作業をしなくても毎回かかる分</p></div>
+        <div><span class="n">約1,300</span><p>呼び出し1回あたりの増加（平均）</p></div>
       </div>
     </div>
     <figure class="chart">
-      <svg class="sc" viewBox="0 0 600 400" role="img" aria-label="操作の回数とトークン消費量の関係"><line x1="74" x2="580" y1="348.0" y2="348.0" class="gl"/><text x="64" y="353.0" class="ax" text-anchor="end">4万</text><line x1="74" x2="580" y1="253.1" y2="253.1" class="gl"/><text x="64" y="258.1" class="ax" text-anchor="end">5万</text><line x1="74" x2="580" y1="158.3" y2="158.3" class="gl"/><text x="64" y="163.3" class="ax" text-anchor="end">6万</text><line x1="74" x2="580" y1="63.4" y2="63.4" class="gl"/><text x="64" y="68.4" class="ax" text-anchor="end">7万</text><text x="74.0" y="372" class="ax" text-anchor="middle">0</text><text x="200.5" y="372" class="ax" text-anchor="middle">4</text><text x="327.0" y="372" class="ax" text-anchor="middle">8</text><text x="453.5" y="372" class="ax" text-anchor="middle">12</text><text x="580.0" y="372" class="ax" text-anchor="middle">16</text><text x="327.0" y="394" class="ax" text-anchor="middle">操作の回数</text><line x1="74.0" y1="304.8" x2="580.0" y2="77.9" class="fit"/><g class="pt"><circle cx="358.6" cy="218.4" r="7"/><title>指示A 1回目：操作9回・53,659トークン</title></g><g class="pt"><circle cx="263.8" cy="229.6" r="7"/><title>指示A 2回目：操作6回・52,486トークン</title></g><g class="pt"><circle cx="200.5" cy="237.4" r="7"/><title>指示A 3回目：操作4回・51,661トークン</title></g><g class="pt"><circle cx="232.1" cy="233.5" r="7"/><title>指示A 4回目：操作5回・52,070トークン</title></g><g class="pt"><circle cx="232.1" cy="229.0" r="7"/><title>指示B：操作5回・52,547トークン</title></g><g class="pt"><circle cx="390.2" cy="122.5" r="7"/><title>指示C：操作10回・63,772トークン</title></g><g class="pt"><circle cx="453.5" cy="74.7" r="7"/><title>指示C＋追加の修正：操作12回・68,808トークン</title></g><g class="pt"><circle cx="232.1" cy="236.2" r="7"/><title>3回に分けて頼む 1回目：操作5回・51,789トークン</title></g><g class="pt"><circle cx="390.2" cy="194.9" r="7"/><title>3回に分けて頼む 2回目まで：操作10回・56,137トークン</title></g><g class="pt"><circle cx="516.8" cy="136.8" r="7"/><title>3回に分けて頼む 3回目まで：操作14回・62,264トークン</title></g><text x="378.2" y="114.5" class="lbl" text-anchor="end">指示C</text><text x="441.5" y="66.7" class="lbl" text-anchor="end">指示C＋追加の修正</text><text x="522.8" y="162.8" class="lbl" text-anchor="end">3回に分けて頼む</text><text x="247.9" y="277.7" class="lbl" text-anchor="middle">指示A・B</text></svg>
-      <figcaption>今回頼んだ10回分。指示Cが線より上にあるのは、1回の操作で本体・取っ手・材質をまとめて作るなど、操作1回の中身が大きかったためです。</figcaption>
+      <svg class="sc" viewBox="0 0 600 400" role="img" aria-label="ツールの呼び出し回数とトークン消費量の関係"><line x1="74" x2="580" y1="348.0" y2="348.0" class="gl"/><text x="64" y="353.0" class="ax" text-anchor="end">4万</text><line x1="74" x2="580" y1="253.1" y2="253.1" class="gl"/><text x="64" y="258.1" class="ax" text-anchor="end">5万</text><line x1="74" x2="580" y1="158.3" y2="158.3" class="gl"/><text x="64" y="163.3" class="ax" text-anchor="end">6万</text><line x1="74" x2="580" y1="63.4" y2="63.4" class="gl"/><text x="64" y="68.4" class="ax" text-anchor="end">7万</text><text x="74.0" y="372" class="ax" text-anchor="middle">0</text><text x="200.5" y="372" class="ax" text-anchor="middle">4</text><text x="327.0" y="372" class="ax" text-anchor="middle">8</text><text x="453.5" y="372" class="ax" text-anchor="middle">12</text><text x="580.0" y="372" class="ax" text-anchor="middle">16</text><text x="327.0" y="394" class="ax" text-anchor="middle">ツールの呼び出し回数</text><line x1="74.0" y1="280.4" x2="580.0" y2="77.8" class="fit"/><g class="pt"><circle cx="358.6" cy="218.4" r="6.5"/><title>指示A：9回・53,659トークン</title></g><g class="pt"><circle cx="263.8" cy="229.6" r="6.5"/><title>指示A：6回・52,486トークン</title></g><g class="pt"><circle cx="200.5" cy="237.4" r="6.5"/><title>指示A：4回・51,661トークン</title></g><g class="pt"><circle cx="232.1" cy="233.5" r="6.5"/><title>指示A：5回・52,070トークン</title></g><g class="pt"><circle cx="232.1" cy="233.5" r="6.5"/><title>指示A：5回・52,067トークン</title></g><g class="pt"><circle cx="232.1" cy="229.0" r="6.5"/><title>指示B：5回・52,547トークン</title></g><g class="pt"><circle cx="390.2" cy="122.5" r="6.5"/><title>指示C（1回目）：10回・63,772トークン</title></g><g class="pt"><circle cx="200.5" cy="187.6" r="6.5"/><title>指示C（2回目）：4回・56,913トークン</title></g><g class="pt"><circle cx="453.5" cy="74.7" r="6.5"/><title>指示C＋追加の修正：12回・68,808トークン</title></g><g class="pt"><circle cx="232.1" cy="236.2" r="6.5"/><title>3回に分けて頼む 1回目：5回・51,789トークン</title></g><g class="pt"><circle cx="390.2" cy="194.9" r="6.5"/><title>3回に分けて頼む 2回目まで：10回・56,137トークン</title></g><g class="pt"><circle cx="516.8" cy="136.8" r="6.5"/><title>3回に分けて頼む 3回目まで：14回・62,264トークン</title></g><g class="pt"><circle cx="74.0" cy="312.6" r="6.5"/><title>先に質問させる（質問のみ）：0回・43,729トークン</title></g><g class="pt"><circle cx="263.8" cy="151.5" r="6.5"/><title>先に質問させる（完成まで）：6回・60,712トークン</title></g><g class="pt"><circle cx="168.9" cy="210.3" r="6.5"/><title>指示C＋完成の基準：3回・54,521トークン</title></g><g class="pt"><circle cx="168.9" cy="202.0" r="6.5"/><title>指示C＋完成の基準：3回・55,390トークン</title></g><g class="pt"><circle cx="232.1" cy="179.4" r="6.5"/><title>指示C＋ポリゴン数の上限：5回・57,773トークン</title></g><g class="pt"><circle cx="74.0" cy="317.8" r="6.5"/><title>作業なし（ツールを読み込まない）：0回・43,181トークン</title></g><g class="pt"><circle cx="105.6" cy="264.6" r="6.5"/><title>作業なし（ツール3つを読み込む）：1回・48,791トークン</title></g><text x="378.2" y="114.5" class="lbl" text-anchor="end">指示C（1回目）</text><text x="441.5" y="66.7" class="lbl" text-anchor="end">指示C＋追加の修正</text><text x="522.8" y="162.8" class="lbl" text-anchor="end">3回に分けて頼む</text><text x="86.0" y="333.8" class="lbl" text-anchor="start">作業なし</text></svg>
+      <figcaption>今回頼んだ19回分。呼び出しが多いほど増える傾向がありますが、1回の呼び出しで書くコードの量によって上下します。</figcaption>
     </figure>
   </div>
 </section>
 
-<!-- 16 トークンを抑える方法 -->
+<!-- 19 トークンを抑える方法 -->
 <section class="slide">
   <p class="kicker">トークン消費量</p>
   <h2>トークン消費量を抑える方法</h2>
   <div class="save">
-    <div class="card f"><div class="no">1</div><div><h3>頼み直しを減らす</h3><p>狙いと違う物ができて最初から頼み直すと、そのたびに約5万かかります。必要なことは最初の指示に書きます。</p></div></div>
+    <div class="card f"><div class="no">1</div><div><h3>頼み直しを減らす</h3><p>狙いと違う物ができて最初から頼み直すと、そのたびに約5万かかります。必要なことは最初の指示に書くか、先に質問させます。</p></div></div>
     <div class="card f"><div class="no">2</div><div><h3>直すときは同じ会話で頼む</h3><p>今回は、1回の修正で +0.4〜0.6万でした。</p></div></div>
-    <div class="card f"><div class="no">3</div><div><h3>別の作業は、新しい会話で始める</h3><p>会話が長くなるほど、操作のたびに読む量が増えます。前提は仕様のファイル（CLAUDE.md、copilot-instructions.md など）に書いておけば、新しい会話でも引き継げます。</p></div></div>
-    <div class="card f"><div class="no">4</div><div><h3>完成の基準を書く</h3><p>指示Cに「斜め上からの画像を1回見て、寸法と色分けが合っていれば完成」と足すと、約6.4万から約5.5万に減りました（操作は10回から3回）。</p></div></div>
+    <div class="card f"><div class="no">3</div><div><h3>別の作業は、新しい会話で始める</h3><p>会話が長くなるほど、呼び出しのたびに読む量が増えます。前提はリポジトリのファイル（CLAUDE.md、copilot-instructions.md など）に書いておけば、新しい会話でも引き継げます。</p></div></div>
+    <div class="card f"><div class="no">4</div><div><h3>完成の基準を書く</h3><p>指示Cに「斜め上からの画像を1回見て、寸法と色分けが合っていれば完成」と足すと、2回とも約5.5万でした（足さない場合は 6.4万と 5.7万）。</p></div></div>
     <div class="card f"><div class="no">5</div><div><h3>使わないツールは読み込まない</h3><p>ツールは、MCP でつないだソフトの操作機能のことです。作業をさせずに比べると、Blender のツール3つを読み込むだけで約4.3万から約4.9万に増えました。</p></div></div>
   </div>
-  <p class="foot">※ 数字は今回 Claude Code が記録した値で、小さな作業での一例です。4 は2回試した結果で、確認を減らすと誤りに気づきにくくなる点に注意が必要です。</p>
+  <p class="foot">※ 数字は今回 Claude Code が記録した値で、小さな作業での一例です。確認を減らすと誤りに気づきにくくなる点に注意が必要です。</p>
 </section>
 
-<!-- 16b Copilot -->
+<!-- 20 Copilot -->
 <section class="slide">
   <p class="kicker">トークン消費量</p>
   <h2>GitHub Copilot に置き換えると</h2>
@@ -473,63 +568,67 @@
   <p class="foot">※ 2026年11月時点の GitHub のドキュメントによる。単価はモデルごとに異なり、プランの内容は変わることがあります。</p>
 </section>
 
-<!-- 17 5項目 -->
+<!-- 21 指示に書く項目 -->
 <section class="slide">
   <p class="kicker">指示の書き方</p>
-  <h2>指示に書く5つの項目</h2>
+  <h2>コードを書かせるときに、指示に書く項目</h2>
   <div class="five">
-    <div class="card f"><b>目的</b><span>何のために作るか<br>誰が使うか</span></div>
-    <div class="card f"><b>形・量</b><span>大きさ、数、<br>範囲</span></div>
-    <div class="card f"><b>見た目・質</b><span>色、素材、<br>雰囲気</span></div>
-    <div class="card f"><b>条件</b><span>してはいけないこと<br>守る制約</span></div>
-    <div class="card f"><b>完成の基準</b><span>何を満たせば<br>完成とするか</span></div>
+    <div class="card f"><b>目的</b><span>何のための機能か<br>誰が使うか</span></div>
+    <div class="card f"><b>入力と出力</b><span>インターフェース<br>データの形式</span></div>
+    <div class="card f"><b>制約</b><span>性能、依存ライブラリ<br>既存コードとの互換性</span></div>
+    <div class="card f"><b>やらないこと</b><span>変更してはいけない<br>範囲</span></div>
+    <div class="card f"><b>受け入れ基準</b><span>通るべきテスト<br>確認する手順</span></div>
   </div>
-  <div class="callout f">新しく入った同僚に頼むときと同じ情報を書きます。「不明な点があれば先に質問してください」と添えることもできます。</div>
+  <div class="callout f">マグカップでいえば、寸法が「入力と出力」、ポリゴン数の上限が「制約」、「画像を1回見て寸法と色分けが合っていれば完成」が「受け入れ基準」にあたります。<br>決めきれない点は、作る前にAIに質問させます。</div>
 </section>
 
-<!-- 18 仕様駆動開発 -->
+<!-- 22 仕様駆動開発 -->
 <section class="slide">
   <p class="kicker">仕様駆動開発</p>
   <h2>仕様駆動開発の進め方</h2>
   <div class="grid2" style="align-items:start">
     <div class="vsteps">
-      <div class="card f"><h3>1. 仕様を書く</h3><p>目的、入力と出力、条件、完成の基準をファイルに書きます。AIと相談しながら書いても構いません。</p></div>
-      <div class="card f"><h3>2. AIに作らせる</h3><p>仕様のファイルを渡します。作業の手順はAIに任せます。</p></div>
-      <div class="card f"><h3>3. 仕様と照らして確かめる</h3><p>完成の基準を満たしているかを、人が確認します。</p></div>
-      <div class="card f"><h3>4. 直すときは仕様を直す</h3><p>仕様が残るので、誰が頼んでも同じ条件で作らせることができます。仕様そのもののレビューもできます。</p></div>
+      <div class="card f"><h3>1. 仕様をファイルに書く</h3><p>前のページの5項目を、リポジトリの中の Markdown に書きます。</p></div>
+      <div class="card f"><h3>2. 実装の前に、計画と質問を出させる</h3><p>変更するファイルと手順をAIに書かせ、不明点は質問させます。ここで認識のずれを直します。</p></div>
+      <div class="card f"><h3>3. 小さな単位で実装させる</h3><p>1回の変更を、レビューできる大きさの差分に収めます。</p></div>
+      <div class="card f"><h3>4. テストとレビューで確かめる</h3><p>受け入れ基準をテストにして実行させ、差分は人がレビューします。</p></div>
+      <div class="card f"><h3>5. 直すときは仕様から直す</h3><p>仕様もコードと一緒にコミットし、レビューの対象にします。</p></div>
     </div>
-<pre><span class="h"># 問い合わせ一覧の作成 仕様</span>
+<pre class="spec"><span class="h"># 注文CSVの取り込み 仕様（spec.md）</span>
 <span class="h">## 目的</span>
-毎週の問い合わせを担当ごとに分け、
-対応漏れを防ぐ
+基幹システムの注文CSVを、毎晩DBへ取り込む
 
 <span class="h">## 入力 / 出力</span>
-- 入力：先週の問い合わせメール
-- 出力：表（受信日・分類・担当・
-  要約1行・急ぎかどうか）
+- 入力: orders_YYYYMMDD.csv（UTF-8、ヘッダーあり）
+- 出力: orders テーブルへ upsert、結果をログに出す
 
-<span class="h">## 条件</span>
-- 分類は「契約・請求・不具合・その他」
-- 要約に個人名や連絡先を入れない
+<span class="h">## 制約</span>
+- 10万行を5分以内で処理する
+- 既存の OrderRepository を使う。スキーマは変えない
 
-<span class="h">## 完成の基準</span>
-- 20件で、分類の誤りが2件以下</pre>
+<span class="h">## やらないこと</span>
+- 画面の変更、ほかのテーブルの更新
+
+<span class="h">## 受け入れ基準</span>
+- 不正な行はスキップし、行番号をログに出す
+- 同じファイルを2回流しても件数が変わらない
+- 上の2点を確認するテストが通る</pre>
   </div>
 </section>
 
-<!-- 19 導入の進め方 -->
+<!-- 23 導入の進め方 -->
 <section class="slide">
   <p class="kicker">今後の進め方</p>
-  <h2>導入の進め方</h2>
+  <h2>開発への取り入れ方</h2>
   <div class="grid4 road" style="flex:1;align-content:center">
-    <div class="card f"><div class="big-num">1</div><h3>個人で試す</h3><p>下書き、要約、調べ物をAIに頼んでみます。</p><div class="goal">目安：週に数回使っている</div></div>
-    <div class="card f"><div class="big-num">2</div><h3>指示をひな形にする</h3><p>うまくいった指示を5項目の形で保存し、次回も使います。</p><div class="goal">目安：ひな形が3つある</div></div>
-    <div class="card f"><div class="big-num">3</div><h3>作業を任せる</h3><p>仕様を渡して、表の整理や小さなツールの作成を任せます。</p><div class="goal">目安：確認だけで済む作業が1つある</div></div>
-    <div class="card f"><div class="big-num">4</div><h3>チームで共有する</h3><p>仕様、ひな形、確認の手順をチームで共有します。</p><div class="goal">目安：頼む人による品質の差が小さい</div></div>
+    <div class="card f"><div class="big-num">1</div><h3>個人で試す</h3><p>既存コードの説明、テストの下書き、小さな関数の実装を頼んでみます。</p><div class="goal">目安：週に数回使っている</div></div>
+    <div class="card f"><div class="big-num">2</div><h3>前提をファイルに残す</h3><p>ビルドとテストのコマンド、コーディング規約を CLAUDE.md や copilot-instructions.md に書きます。</p><div class="goal">目安：毎回同じ説明をしなくて済む</div></div>
+    <div class="card f"><div class="big-num">3</div><h3>仕様から実装させる</h3><p>小さな機能を、仕様 → 計画 → 実装 → テスト → プルリクエストの順で任せます。</p><div class="goal">目安：レビューだけで取り込めた変更がある</div></div>
+    <div class="card f"><div class="big-num">4</div><h3>チームで運用する</h3><p>仕様のひな形、レビューの観点、CI での確認をチームでそろえます。</p><div class="goal">目安：頼む人による品質の差が小さい</div></div>
   </div>
 </section>
 
-<!-- 20 注意点 -->
+<!-- 24 注意点 -->
 <section class="slide">
   <p class="kicker">今後の進め方</p>
   <h2>AIに任せるときの注意点</h2>
@@ -541,30 +640,31 @@
         <li>取っ手の端がカップの内側に突き出ていた（指示A）</li>
         <li>色の塗り分けが指定と違っていた（指示C）</li>
       </ul>
-      <p style="margin-top:8px">どちらも Claude Code が画像を見て気づき、自分で直しました。ただし、気づかないまま残る誤りもあります。</p>
+      <p style="margin-top:8px">どちらも Claude Code が画像を見て気づき、自分で直しました。ただし、気づかないまま残る誤りもあります。コードでも同じです。</p>
     </div>
     <div class="card f">
       <h3>守ること</h3>
       <ul class="rules">
-        <li>最後は必ず人が確認する</li>
-        <li>任せる範囲を決め、元に戻せるようにしておく</li>
-        <li>機密情報や個人情報を入力しない</li>
+        <li>差分は必ず人がレビューする</li>
+        <li>テストと CI を通す</li>
+        <li>ブランチで作業させ、元に戻せるようにしておく</li>
+        <li>API キーや顧客データなどの秘密情報を入力しない</li>
         <li>会社のルールに従う</li>
       </ul>
     </div>
   </div>
 </section>
 
-<!-- 21 まとめ -->
+<!-- 25 まとめ -->
 <section class="slide cover">
   <img class="bgimg" src="images/cover.jpg" alt="">
   <div class="shade"></div>
   <div class="inner" style="max-width:900px">
     <p class="kicker">まとめ</p>
     <ul class="summary">
-      <li>AIは、指示を受けてソフトを操作し、物を作れるようになりました。</li>
+      <li>AIは、指示を受けてコードを書き、ソフトを操作して物を作れるようになりました。</li>
       <li>指示に書いた項目はそのとおりに作られ、書いていない項目はAIが決めます。</li>
-      <li>何を作るかを仕様として書き、結果を確かめることが、人の仕事の中心になります。</li>
+      <li>何を作るかを仕様として書き、テストとレビューで確かめることが、人の仕事の中心になります。</li>
     </ul>
   </div>
 </section>
@@ -575,7 +675,7 @@
 
 <div id="bar">
   <button id="prev" aria-label="前へ">← 前</button>
-  <span id="pageNo">1 / 22</span>
+  <span id="pageNo">1 / 25</span>
   <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
   <button id="fsBtn">全画面 (F)</button>
