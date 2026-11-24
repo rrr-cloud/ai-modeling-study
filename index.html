@@ -111,7 +111,7 @@
   .callout { margin-top: auto; border-radius: 14px; padding: 18px 26px; font-size: 24px; line-height: 1.6; background: linear-gradient(90deg, rgba(122,162,255,.16), rgba(180,140,255,.10)); border: 1px solid rgba(122,162,255,.35); }
   .callout.warm { background: rgba(255,184,107,.10); border-color: rgba(255,184,107,.4); }
 
-  /* 実験の4パターン */
+  /* 指示の4パターン */
   .pat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 10px; }
   .pat .card { min-height: 230px; padding: 26px 24px; }
   .pat .lv { font-size: 17px; }
@@ -171,6 +171,29 @@
   .rounds .col.vs { border-color: rgba(122,162,255,.55); }
   .tokpts { margin-bottom: 22px; }
   .tokpts .card { padding: 24px 24px; }
+  /* トークンと操作の回数 */
+  .opgrid { display: grid; grid-template-columns: 470px 1fr; gap: 28px; align-items: start; }
+  .opleft { display: flex; flex-direction: column; gap: 16px; }
+  .opleft .card { padding: 18px 22px; }
+  .opleft h3 { font-size: 21px; }
+  .cycle { margin: 4px 0 8px; padding-left: 1.3em; }
+  .cycle li { font-size: 18px; line-height: 1.6; color: var(--ink); }
+  .cycle b { color: var(--accent); }
+  .opleft .card p { font-size: 16px; }
+  .nums { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .nums .n { font-size: 36px; font-weight: 800; }
+  .nums .u { font-size: 15px; color: var(--sub); margin-left: 4px; }
+  .nums p { margin-top: 2px !important; }
+  .chart { margin: 0; }
+  .sc { width: 100%; height: auto; display: block; }
+  .sc .gl { stroke: rgba(255,255,255,.07); stroke-width: 1; }
+  .sc .ax { fill: var(--sub); font-size: 14px; }
+  .sc .fit { stroke: #8c98b6; stroke-width: 2; stroke-dasharray: 6 6; }
+  .sc .fitlbl { fill: var(--sub); font-size: 14px; }
+  .sc .pt circle { fill: var(--accent); stroke: var(--panel); stroke-width: 2; cursor: default; }
+  .sc .pt:hover circle { r: 9; }
+  .sc .lbl { fill: var(--ink); font-size: 14px; }
+  .chart figcaption { font-size: 13px; color: var(--sub); margin-top: 4px; }
   /* 進め方 */
   .road .card { display: flex; flex-direction: column; padding: 22px 22px; }
   .road .card h3 { font-size: 23px; }
@@ -272,9 +295,9 @@
   <div class="callout f">人の仕事は「作業」から <b class="grad">「決める・伝える・確かめる」</b> へ。</div>
 </section>
 
-<!-- 6 実験 -->
+<!-- 6 指示による違い -->
 <section class="slide">
-  <p class="kicker">実験</p>
+  <p class="kicker">指示による違い</p>
   <h2>同じAI・同じ道具。<br>変えたのは<span class="grad">指示だけ</span>。</h2>
   <p class="sub" style="margin:-14px 0 18px">毎回、前の会話を知らない新しい Claude Code に指示だけを渡し、出てきた結果をそのまま載せています。</p>
   <div class="pat f">
@@ -348,17 +371,40 @@
   <div class="callout f">同じ仕上がりまでのトークンは<b class="grad">ほぼ同じ</b>。違ったのは、<b class="warmtxt">人が見て直した回数（3往復 対 1回）</b>。</div>
 </section>
 
+<!-- 13c トークンと操作の回数 -->
+<section class="slide">
+  <p class="kicker">トークン（AIの使用量）</p>
+  <h2>トークンは、<span class="grad">操作の回数</span>でほぼ決まる</h2>
+  <div class="opgrid">
+    <div class="opleft">
+      <div class="card f">
+        <h3>操作1回で起きること</h3>
+        <ol class="cycle"><li>AIが、それまでのやり取りを<b>読む</b></li><li>次の操作（コード）を<b>書く</b></li><li>結果（文字や画像）を<b>受け取る</b></li></ol>
+        <p>結果はやり取りに積み上がるので、操作が増えるほど読む量も増える。</p>
+      </div>
+      <div class="card f nums">
+        <div><span class="n grad">約1,200</span><span class="u">トークン</span><p>操作が1回増えるごとに</p></div>
+        <div><span class="n grad">約4.5万</span><span class="u">トークン</span><p>操作0回でもかかる基本の分</p></div>
+      </div>
+    </div>
+    <figure class="chart">
+      <svg class="sc" viewBox="0 0 600 400" role="img" aria-label="操作の回数とトークン数の関係。操作が1回増えるごとに約1,200トークン増える"><line x1="74" x2="580" y1="348.0" y2="348.0" class="gl"/><text x="64" y="353.0" class="ax" text-anchor="end">4万</text><line x1="74" x2="580" y1="253.1" y2="253.1" class="gl"/><text x="64" y="258.1" class="ax" text-anchor="end">5万</text><line x1="74" x2="580" y1="158.3" y2="158.3" class="gl"/><text x="64" y="163.3" class="ax" text-anchor="end">6万</text><line x1="74" x2="580" y1="63.4" y2="63.4" class="gl"/><text x="64" y="68.4" class="ax" text-anchor="end">7万</text><text x="74.0" y="372" class="ax" text-anchor="middle">0</text><text x="189.0" y="372" class="ax" text-anchor="middle">5</text><text x="304.0" y="372" class="ax" text-anchor="middle">10</text><text x="419.0" y="372" class="ax" text-anchor="middle">15</text><text x="534.0" y="372" class="ax" text-anchor="middle">20</text><text x="327.0" y="394" class="ax" text-anchor="middle">操作の回数</text><line x1="74.0" y1="296.8" x2="580.0" y2="40.9" class="fit"/><text x="477.6" y="124.7" class="fitlbl" text-anchor="start">1回あたり ≒ +1,200</text><g class="pt"><circle cx="281.0" cy="218.4" r="7"/><title>指示A 1回目：操作9回・53,659トークン</title></g><g class="pt"><circle cx="212.0" cy="229.6" r="7"/><title>指示A 2回目：操作6回・52,486トークン</title></g><g class="pt"><circle cx="166.0" cy="237.4" r="7"/><title>指示A 3回目：操作4回・51,661トークン</title></g><g class="pt"><circle cx="189.0" cy="233.5" r="7"/><title>指示A 4回目：操作5回・52,070トークン</title></g><g class="pt"><circle cx="189.0" cy="229.0" r="7"/><title>指示B：操作5回・52,547トークン</title></g><g class="pt"><circle cx="419.0" cy="117.2" r="7"/><title>指示C：操作15回・64,334トークン</title></g><g class="pt"><circle cx="534.0" cy="52.9" r="7"/><title>指示C＋追加の修正：操作20回・71,114トークン</title></g><g class="pt"><circle cx="189.0" cy="236.2" r="7"/><title>大雑把に始めて 1往復目：操作5回・51,789トークン</title></g><g class="pt"><circle cx="304.0" cy="194.9" r="7"/><title>大雑把に始めて 2往復目：操作10回・56,137トークン</title></g><g class="pt"><circle cx="396.0" cy="136.8" r="7"/><title>大雑把に始めて 3往復目：操作14回・62,264トークン</title></g><text x="429.0" y="111.2" class="lbl" text-anchor="start">指示C</text><text x="522.0" y="40.9" class="lbl" text-anchor="end">指示C＋追加の修正</text><text x="406.0" y="156.8" class="lbl" text-anchor="start">大雑把に3往復</text><text x="223.5" y="277.7" class="lbl" text-anchor="middle">指示A・B（1回で終わり）</text></svg>
+      <figcaption>指示A〜C・追加の修正・大雑把に始めた3往復の計10回（点にマウスを乗せると数字が出る）</figcaption>
+    </figure>
+  </div>
+</section>
+
 <!-- 13b トークン：考え方 -->
 <section class="slide">
   <p class="kicker">トークン（AIの使用量）</p>
   <h2>使用量を決めるのは<span class="grad">「往復」と「やり直し」</span></h2>
   <div class="grid3 tokpts">
-    <div class="card f"><h3>指示文の長さはほぼ関係ない</h3><p>どの実験も約5万は毎回かかる基本の分（推定）。95文字の指示文は、その1%にも満たない。</p></div>
+    <div class="card f"><h3>指示文の長さはほぼ関係ない</h3><p>どの指示でも約5万は毎回かかる（操作0回でも約4.5万）。95文字の指示文は、その1%にも満たない。</p></div>
     <div class="card f"><h3>直すなら、同じ会話で</h3><p>同じ会話なら1往復 +0.4〜0.7万。一から頼み直すと、毎回また約5万。</p></div>
     <div class="card f"><h3>最初に書くと、人の往復が減る</h3><p>トークンは同じくらいでも、見て・考えて・書く手間が3回から1回になった。</p></div>
   </div>
   <div class="callout f"><b>GitHub Copilot</b> も 2026年6月から、トークン量で数える方式に。<b class="grad">同じ考え方があてはまる。</b></div>
-  <p class="foot">※ トークン数は今回の実験で Claude Code が記録した値（小さな作業での一例）。料金は契約や使い方で変わります。</p>
+  <p class="foot">※ トークン数は指示A〜Cなどを頼んだときに Claude Code が記録した値（小さな作業での一例）。料金は契約や使い方で変わります。</p>
 </section>
 
 <!-- 14 5要素 -->
@@ -423,12 +469,12 @@
 <!-- 18 向き合い方④守ること -->
 <section class="slide">
   <p class="kicker">これからの向き合い方 ③ 守ること</p>
-  <h2>AIも<span class="grad">間違える</span>。実験でも起きた。</h2>
+  <h2>AIも<span class="grad">間違える</span>。指示Cでも起きた。</h2>
   <div class="grid2" style="align-items:stretch">
     <div class="card f" style="border-color:rgba(255,184,107,.45)">
-      <h3 class="warmtxt">実験Cで起きたこと</h3>
+      <h3 class="warmtxt">指示Cで起きたこと</h3>
       <p>AIが自分の取っ手を消すつもりで、名前が同じだった<b>別の作業（指示B）の取っ手を消した</b>。AIは確認の段階で自分で気づき、調べて元に戻し、「元どおりか確かめてほしい」と報告した。</p>
-      <p style="margin-top:10px">※ 実験の作り（全部を1つのファイルで行った）も原因の一つ。</p>
+      <p style="margin-top:10px">※ 全部を1つのファイルで作らせた、こちらの進め方も原因の一つ。</p>
     </div>
     <div class="card f">
       <h3>だから、守ること</h3>
@@ -463,7 +509,7 @@
 
 <div id="bar">
   <button id="prev" aria-label="前へ">← 前</button>
-  <span id="pageNo">1 / 19</span>
+  <span id="pageNo">1 / 20</span>
   <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
   <button id="notesBtn">話す内容メモ (N)</button>
