@@ -7,18 +7,17 @@
 <title>AIと作る3Dモデル</title>
 <style>
   :root {
-    --bg: #eef0f3;
-    --paper: #ffffff;
-    --ink: #1d2433;
-    --sub: #5b6475;
-    --line: #d9dde5;
-    --accent: #2b5fd9;
-    --accent-soft: #e8eefc;
-    --warm: #c2410c;
-    --warm-soft: #fdeee6;
-    --ok: #15803d;
-    --ok-soft: #e7f5ec;
-    --code: #f4f5f8;
+    --bg: #070b16;
+    --panel: #0f1628;
+    --panel2: #141d34;
+    --ink: #eef2ff;
+    --sub: #97a3c0;
+    --line: #26314f;
+    --accent: #7aa2ff;
+    --accent2: #b48cff;
+    --warm: #ffb86b;
+    --ok: #6ee7a8;
+    --code: #0b1222;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
@@ -30,112 +29,153 @@
     -webkit-font-smoothing: antialiased;
   }
   #viewport { position: fixed; inset: 0 0 52px 0; display: flex; align-items: center; justify-content: center; }
-  #stage { width: 1280px; height: 720px; position: relative; transform-origin: center center; flex: none; }
+  #stage { width: 1280px; height: 720px; position: relative; flex: none; }
+
   .slide {
-    position: absolute; inset: 0;
-    background: var(--paper);
-    border-radius: 14px;
-    box-shadow: 0 6px 30px rgba(20, 30, 60, .10);
-    padding: 64px 80px 56px;
-    display: none;
-    flex-direction: column;
+    position: absolute; inset: 0; overflow: hidden;
+    background: radial-gradient(1200px 600px at 85% -10%, rgba(122,162,255,.13), transparent 60%),
+                radial-gradient(900px 500px at -10% 110%, rgba(180,140,255,.10), transparent 60%),
+                var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 60px 80px 56px;
+    display: flex; flex-direction: column;
+    opacity: 0; visibility: hidden; transform: translateX(40px) scale(.985);
+    transition: opacity .5s ease, transform .5s ease, visibility 0s linear .5s;
   }
-  .slide.active { display: flex; }
-  .kicker { color: var(--accent); font-weight: 700; font-size: 20px; letter-spacing: .06em; margin: 0 0 10px; }
-  h1 { font-size: 56px; line-height: 1.3; margin: 0 0 24px; }
-  h2 { font-size: 40px; line-height: 1.35; margin: 0 0 28px; }
-  h3 { font-size: 26px; margin: 0 0 10px; }
-  p, li { font-size: 24px; line-height: 1.7; }
-  p { margin: 0 0 14px; }
+  .slide.active { opacity: 1; visibility: visible; transform: none; transition: opacity .5s ease, transform .5s ease; }
+  .slide.left { transform: translateX(-40px) scale(.985); }
+
+  .kicker { color: var(--accent); font-weight: 700; font-size: 18px; letter-spacing: .14em; margin: 0 0 12px; text-transform: uppercase; }
+  h1, h2 { margin: 0; line-height: 1.25; letter-spacing: .01em; }
+  h1 { font-size: 72px; font-weight: 800; }
+  h2 { font-size: 46px; font-weight: 800; margin-bottom: 30px; }
+  .grad { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .warmtxt { color: var(--warm); }
+  h3 { font-size: 26px; margin: 0 0 8px; }
+  p { font-size: 22px; line-height: 1.7; margin: 0 0 12px; }
   .sub { color: var(--sub); }
-  .small { font-size: 19px; }
-  ul { margin: 0; padding-left: 1.2em; }
-  li { margin-bottom: 8px; }
-  strong { color: var(--accent); }
-  .warm { color: var(--warm); }
-  .num { position: absolute; right: 36px; bottom: 22px; color: var(--sub); font-size: 16px; }
+  .num { position: absolute; right: 32px; bottom: 20px; color: var(--sub); font-size: 15px; letter-spacing: .1em; }
+
+  .card { background: rgba(255,255,255,.035); border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; }
+  .card p { font-size: 19px; color: var(--sub); margin: 0; line-height: 1.6; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .big-num { font-size: 52px; font-weight: 800; line-height: 1; margin-bottom: 14px; }
+
+  /* ── 項目を1つずつ出す（いま読んでいる所を光らせる） ── */
+  .f { opacity: 0; transform: translateY(16px); transition: opacity .45s ease, transform .45s ease, box-shadow .35s, border-color .35s, background-color .35s; }
+  .f.shown { opacity: .5; transform: none; }
+  .f.now { opacity: 1; transform: none; }
+  .card.f.now, .box.f.now, .step.f.now .box, .loop.f.now { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 40px rgba(122,162,255,.28); background-color: rgba(122,162,255,.08); }
+  tr.f.now td { background: rgba(122,162,255,.10); }
+  tr.f.now td:first-child { box-shadow: inset 4px 0 0 var(--accent); }
+  .callout.f.now { box-shadow: 0 0 40px rgba(122,162,255,.25); }
+  .slide.done .f { opacity: 1; }
 
   /* 表紙 */
-  .cover { justify-content: center; background: linear-gradient(135deg, #ffffff 0%, #f1f5ff 100%); }
-  .cover h1 { font-size: 64px; }
-  .cover .tag { display: inline-block; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 18px; font-size: 20px; color: var(--sub); margin-right: 10px; }
+  .cover { padding: 0; background: #000; }
+  .cover img.bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .cover .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,8,18,.92) 0%, rgba(5,8,18,.7) 42%, rgba(5,8,18,0) 75%); }
+  .cover .inner { position: relative; padding: 0 80px; margin: auto 0; max-width: 760px; }
+  .cover h1 { font-size: 66px; margin-bottom: 22px; }
+  .cover .lead { font-size: 24px; color: #d5dcf0; margin-bottom: 30px; }
+  .tag { display: inline-block; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 6px 16px; font-size: 17px; color: #dfe5f5; margin: 0 8px 8px 0; background: rgba(0,0,0,.25); }
 
-  /* 汎用レイアウト */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .card { border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; background: #fff; }
-  .card.blue { background: var(--accent-soft); border-color: #c9d6f7; }
-  .card.warm { background: var(--warm-soft); border-color: #f4cdb8; }
-  .card.ok { background: var(--ok-soft); border-color: #bfe3cb; }
-  .card p, .card li { font-size: 21px; }
-  .big-num { font-size: 44px; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 10px; }
+  /* 灯台ができていく様子 */
+  .build { display: grid; grid-template-columns: 1fr 1.45fr; gap: 36px; align-items: center; flex: 1; }
+  .frames { position: relative; aspect-ratio: 960/600; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #222; }
+  .frames img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .7s ease; }
+  .frames img.on { opacity: 1; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip { font-size: 15px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--sub); transition: all .3s; }
+  .chip.on { color: #fff; border-color: var(--accent); background: rgba(122,162,255,.18); }
+  .bigsay { font-size: 40px; font-weight: 800; line-height: 1.4; }
 
-  /* 流れ図 */
-  .flow { display: flex; align-items: stretch; gap: 14px; margin: 10px 0 26px; }
-  .flow .box { flex: 1; border: 2px solid var(--line); border-radius: 12px; padding: 18px; text-align: center; background: #fff; }
-  .flow .box b { display: block; font-size: 24px; margin-bottom: 6px; }
-  .flow .box span { font-size: 18px; color: var(--sub); line-height: 1.5; display: block; }
-  .flow .box.hl { border-color: var(--accent); background: var(--accent-soft); }
-  .flow .arrow { align-self: center; font-size: 30px; color: var(--accent); flex: none; }
-  .loopnote { text-align: center; color: var(--sub); font-size: 19px; margin-top: -12px; }
+  /* しくみの流れ */
+  .flow { display: flex; align-items: stretch; gap: 0; margin: 18px 0 26px; }
+  .flow .step { display: flex; align-items: stretch; flex: 1; }
+  .flow .arrow { align-self: center; color: var(--accent); font-size: 30px; padding: 0 12px; }
+  .box { flex: 1; border: 1px solid var(--line); border-radius: 14px; padding: 22px 16px; text-align: center; background: rgba(255,255,255,.035); }
+  .box b { display: block; font-size: 26px; margin-bottom: 8px; }
+  .box span { display: block; font-size: 17px; color: var(--sub); line-height: 1.55; }
+  .loop { text-align: center; font-size: 22px; padding: 16px; border: 1px dashed rgba(122,162,255,.5); border-radius: 14px; }
+
+  /* 表 */
+  table { border-collapse: collapse; width: 100%; font-size: 22px; }
+  th, td { border-bottom: 1px solid var(--line); padding: 15px 18px; text-align: left; line-height: 1.5; }
+  th { color: var(--sub); font-weight: 600; font-size: 17px; letter-spacing: .08em; }
+  td:first-child { font-weight: 700; width: 24%; }
+  td b { color: var(--accent); }
+  .callout { margin-top: auto; border-radius: 14px; padding: 18px 26px; font-size: 24px; line-height: 1.6; background: linear-gradient(90deg, rgba(122,162,255,.16), rgba(180,140,255,.10)); border: 1px solid rgba(122,162,255,.35); }
+  .callout.warm { background: rgba(255,184,107,.10); border-color: rgba(255,184,107,.4); }
+
+  /* 実験の4パターン */
+  .pat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 10px; }
+  .pat .card { min-height: 230px; padding: 26px 24px; }
+  .pat .lv { font-size: 17px; }
+  .lv { display: inline-block; font-size: 15px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: #3b4560; color: #fff; margin-bottom: 12px; }
+  .lv.c { background: #2b5fd9; } .lv.d { background: #15803d; }
+  .q { font-size: 22px; line-height: 1.6; color: var(--ink); }
+
+  /* 動画ページ */
+  .vid { display: grid; grid-template-columns: 330px 1fr; gap: 30px; flex: 1; min-height: 0; align-items: center; }
+  .vid .side .q { font-size: 19px; background: var(--code); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 12px 0 18px; }
+  .vid .side .res { font-size: 20px; line-height: 1.6; }
+  .vid .side .res b { color: var(--warm); }
+  .vbox { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #000; aspect-ratio: 16/9; }
+  .vbox video { width: 100%; height: 100%; display: block; }
+  .vbox .replay { position: absolute; right: 14px; bottom: 14px; font: inherit; font-size: 15px; color: #fff; background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.3); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  .vid h2 { font-size: 40px; margin-bottom: 6px; }
+
+  .vslide { padding: 0; background: #0d111c; }
+  .vslide video { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .vslide .replay { position: absolute; right: 18px; top: 16px; font: inherit; font-size: 15px; color: #fff; background: rgba(0,0,0,.5); border: 1px solid rgba(255,255,255,.25); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  .vslide .num { display: none; }
 
   /* 比較 */
-  table { border-collapse: collapse; width: 100%; font-size: 21px; }
-  th, td { border-bottom: 1px solid var(--line); padding: 14px 16px; text-align: left; vertical-align: top; line-height: 1.6; }
-  th { color: var(--sub); font-weight: 600; font-size: 18px; }
-  td:first-child { font-weight: 700; width: 22%; }
-
-  /* プロンプト比較 */
-  .cmp { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1; min-height: 0; }
-  .cmp .col { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-  .cmp img { width: 100%; height: 250px; object-fit: cover; display: block; background: #eee; }
-  .cmp .prompt { background: var(--code); padding: 12px 16px; font-size: 16.5px; line-height: 1.55; border-bottom: 1px solid var(--line); min-height: 128px; }
-  .cmp .prompt .lv { display: inline-block; font-size: 14px; font-weight: 700; color: #fff; background: var(--sub); border-radius: 6px; padding: 1px 8px; margin-bottom: 6px; }
-  .cmp .col:nth-child(3) .prompt .lv { background: var(--accent); }
-  .cmp .res { padding: 10px 16px; font-size: 17px; line-height: 1.55; color: var(--ink); }
+  .cmp4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .cmp4 .col { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: rgba(255,255,255,.03); }
+  .cmp4 img { width: 100%; aspect-ratio: 960/600; object-fit: cover; display: block; }
+  .cmp4 .meta { padding: 12px 16px 14px; }
+  .cmp4 .chars { font-size: 34px; font-weight: 800; line-height: 1.1; }
+  .cmp4 .chars small { font-size: 16px; color: var(--sub); font-weight: 600; margin-left: 4px; }
+  .cmp4 .what { font-size: 18px; color: var(--sub); margin-top: 4px; }
 
   /* 5要素 */
-  .five { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 26px; }
-  .five .card { padding: 18px; text-align: center; }
-  .five .card b { display: block; font-size: 24px; margin-bottom: 8px; color: var(--accent); }
-  .five .card span { font-size: 17px; color: var(--sub); line-height: 1.5; display: block; }
+  .five { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 22px; }
+  .five .card { text-align: center; padding: 30px 12px; }
+  .five b { display: block; font-size: 29px; margin-bottom: 10px; color: var(--accent); }
+  .five span { font-size: 18px; color: var(--sub); line-height: 1.55; display: block; }
+  .tips .card h3 { font-size: 24px; }
+  .tips .card p { font-size: 20px; }
 
-  pre { background: var(--code); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; font-family: "BIZ UDGothic", "MS Gothic", Consolas, monospace; font-size: 17px; line-height: 1.6; margin: 0; white-space: pre-wrap; }
-
-  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .steps .card { position: relative; padding-top: 26px; }
-  .steps .card .big-num { font-size: 36px; }
-
-  .card.step { padding: 14px 22px; margin-bottom: 12px; }
-  .card.step h3 { margin-bottom: 2px; }
-  .card.step p { margin: 0; }
-  .callout { border-left: 5px solid var(--accent); background: var(--accent-soft); padding: 14px 22px; border-radius: 0 10px 10px 0; font-size: 22px; line-height: 1.6; margin-top: auto; }
-  .callout.warm { border-color: var(--warm); background: var(--warm-soft); }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; font-family: "BIZ UDGothic", "MS Gothic", Consolas, monospace; font-size: 17px; line-height: 1.62; margin: 0; white-space: pre-wrap; color: #cfd8f0; }
+  pre .h { color: var(--accent); }
+  .vsteps { display: flex; flex-direction: column; gap: 10px; }
+  .vsteps .card { padding: 14px 22px; }
+  .vsteps .card h3 { font-size: 22px; margin: 0 0 2px; }
+  .vsteps .card p { font-size: 16px; }
 
   /* 話す内容メモ */
-  .notes { display: none; }
-  body.show-notes .notes {
-    display: block; position: fixed; left: 0; right: 0; bottom: 52px; max-height: 32vh; overflow: auto;
-    background: #1d2433; color: #f1f3f7; font-size: 16px; line-height: 1.7; padding: 14px 24px; z-index: 5;
-  }
-  body.show-notes .notes::before { content: "話す内容メモ（N で閉じる）"; display: block; color: #9fb4ea; font-size: 13px; margin-bottom: 4px; }
+  #notes { display: none; position: fixed; left: 0; right: 0; bottom: 52px; max-height: 38vh; overflow: auto; background: rgba(8,12,24,.97); border-top: 1px solid var(--line); padding: 14px 26px 18px; z-index: 5; }
+  body.show-notes #notes { display: block; }
+  #notes .nt { color: var(--accent); font-size: 13px; letter-spacing: .08em; margin-bottom: 8px; }
+  #notes p { font-size: 16px; line-height: 1.75; margin: 0 0 8px; color: #5d6886; padding-left: 26px; position: relative; }
+  #notes p.cur { color: #f2f5ff; }
+  #notes p::before { content: "▶"; position: absolute; left: 0; font-size: 12px; top: 4px; color: #3c4666; }
+  #notes p.cur::before { color: var(--warm); }
+  #notes p:first-of-type::before { content: "●"; }
 
-  /* 操作バー */
-  #bar {
-    position: fixed; left: 0; right: 0; bottom: 0; height: 52px;
-    display: flex; align-items: center; gap: 10px; padding: 0 16px;
-    background: var(--paper); border-top: 1px solid var(--line); font-size: 14px; color: var(--sub);
-  }
-  #bar button {
-    font: inherit; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 8px;
-    padding: 6px 12px; cursor: pointer; white-space: nowrap;
-  }
-  #bar button:hover { border-color: var(--accent); color: var(--accent); }
+  #bar { position: fixed; left: 0; right: 0; bottom: 0; height: 52px; display: flex; align-items: center; gap: 10px; padding: 0 16px; background: #0a0f1d; border-top: 1px solid var(--line); font-size: 14px; color: var(--sub); }
+  #bar button, #bar a { font: inherit; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; white-space: nowrap; text-decoration: none; }
+  #bar button:hover, #bar a:hover { border-color: var(--accent); color: var(--accent); }
   #progress { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; min-width: 40px; }
-  #progress i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
-  #pageNo { min-width: 54px; text-align: center; }
-  .hint { white-space: nowrap; }
-  @media (max-width: 720px) { .hint { display: none; } #bar { gap: 6px; padding: 0 8px; } }
+  #progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .3s; }
+  #pageNo { min-width: 56px; text-align: center; }
+  @media (max-width: 760px) { .hint, #bar a { display: none; } #bar { gap: 6px; padding: 0 8px; } }
+  @media (prefers-reduced-motion: reduce) { .slide, .f, .frames img { transition: none !important; } }
 </style>
 </head>
 <body>
@@ -143,239 +183,313 @@
 
 <!-- 1 表紙 -->
 <section class="slide cover">
-  <p class="kicker">社内勉強会 ・ 約10分</p>
-  <h1>AIと一緒に<br>3Dモデルを作ってみる</h1>
-  <p class="sub" style="font-size:26px;margin-bottom:34px">Claude Code × Blender MCP で知る「AI駆動開発」のはじめかた</p>
-  <div><span class="tag">AI経験ゼロでOK</span><span class="tag">3Dモデリング</span><span class="tag">指示の書き方</span><span class="tag">仕様駆動開発</span></div>
-  <aside class="notes">（0:00〜0:30）今日はAIにほとんど触ったことがない人向けに、AIに3Dモデルを作らせる例を見ながら、これからの仕事でのAIの使い方を考えます。専門用語はできるだけ使いません。</aside>
+  <img class="bgimg" src="images/cover.jpg" alt="">
+  <div class="shade"></div>
+  <div class="inner">
+    <p class="kicker">社内勉強会 ・ 10分</p>
+    <h1>AIに「作って」と<br>頼んだら、<span class="grad">ここまで</span><br>できる。</h1>
+    <p class="lead">Claude Code × Blender MCP で知る<br>AI駆動開発と仕様駆動開発のはじめかた</p>
+    <div><span class="tag">AI経験ゼロでOK</span><span class="tag">3Dモデリング</span><span class="tag">指示の書き方</span><span class="tag">仕様駆動開発</span></div>
+  </div>
 </section>
 
-<!-- 2 今日の話 -->
+<!-- 2 灯台 -->
+<section class="slide">
+  <p class="kicker">はじめに</p>
+  <div class="build">
+    <div>
+      <h2 style="font-size:44px">この灯台、<br><span class="grad">AIが一から</span><br>作りました。</h2>
+      <p class="sub">Claude Code が Blender を操作して、6つの段階で組み立てた。</p>
+      <div class="callout f" style="margin-top:26px;font-size:22px">人は Blender を<b class="warmtxt">一度も操作していない</b>。<br>したのは、日本語で頼むことだけ。</div>
+    </div>
+    <div>
+      <div class="frames" data-frames>
+        <img src="images/lighthouse/f00.jpg" alt=""><img src="images/lighthouse/f01.jpg" alt=""><img src="images/lighthouse/f02.jpg" alt="">
+        <img src="images/lighthouse/f03.jpg" alt=""><img src="images/lighthouse/f04.jpg" alt=""><img src="images/lighthouse/f05.jpg" alt=""><img src="images/lighthouse/f06.jpg" alt="">
+      </div>
+      <div class="chips"><span class="chip">空の画面</span><span class="chip">島</span><span class="chip">塔</span><span class="chip">灯室・手すり</span><span class="chip">小屋・小道</span><span class="chip">海と夕空</span><span class="chip">明かり</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 今日の3つ -->
 <section class="slide">
   <p class="kicker">今日の話</p>
-  <h2>10分で持ち帰ってほしいこと</h2>
-  <div class="grid3">
-    <div class="card"><div class="big-num">1</div><h3>AIは「手を動かす」</h3><p class="sub">質問に答えるだけでなく、道具を操作して物を作れる</p></div>
-    <div class="card"><div class="big-num">2</div><h3>指示で結果が変わる</h3><p class="sub">同じAIでも、伝え方しだいで仕上がりがまるで違う</p></div>
-    <div class="card"><div class="big-num">3</div><h3>「仕様」が主役になる</h3><p class="sub">これからは、何を作るかを書く力が大事になる</p></div>
+  <h2>持ち帰ってほしいのは、<span class="grad">3つだけ</span></h2>
+  <div class="grid3" style="flex:1;align-content:center">
+    <div class="card f"><div class="big-num grad">1</div><h3>AIは「手を動かす」</h3><p>質問に答えるだけでなく、道具を操作して物を作れる</p></div>
+    <div class="card f"><div class="big-num grad">2</div><h3>指示で結果が変わる</h3><p>同じAIでも、伝え方しだいで仕上がりがまるで違う</p></div>
+    <div class="card f"><div class="big-num grad">3</div><h3>「仕様」が主役になる</h3><p>これからは、何を作るかを書く力が大事になる</p></div>
   </div>
-  <aside class="notes">（0:30〜1:00）3つだけ覚えて帰ってください。1つ目、AIは会話だけでなく作業をする。2つ目、指示の出し方で結果が変わる。3つ目、だからこそ「何を作るか」をきちんと書くこと＝仕様が大事になる。</aside>
 </section>
 
-<!-- 3 登場人物 -->
+<!-- 4 しくみ -->
 <section class="slide">
   <p class="kicker">しくみ</p>
-  <h2>登場するのは3つだけ</h2>
+  <h2>登場するのは<span class="grad">3つだけ</span></h2>
   <div class="flow">
-    <div class="box"><b>あなた</b><span>日本語で<br>「マグカップを作って」</span></div>
-    <div class="arrow">→</div>
-    <div class="box hl"><b>Claude Code</b><span>AIの作業係。<br>考えて、手順を組み立てる</span></div>
-    <div class="arrow">→</div>
-    <div class="box hl"><b>MCP</b><span>AIと道具をつなぐ<br>「共通のコンセント」</span></div>
-    <div class="arrow">→</div>
-    <div class="box"><b>Blender</b><span>無料の3Dソフト。<br>実際に形を作る場所</span></div>
+    <div class="step f"><div class="box"><b>あなた</b><span>日本語で<br>「マグカップを作って」</span></div></div>
+    <div class="step f"><div class="arrow">→</div><div class="box"><b>Claude Code</b><span>AIの作業係。<br>考えて、手順を組み立てる</span></div></div>
+    <div class="step f"><div class="arrow">→</div><div class="box"><b>MCP</b><span>AIと道具をつなぐ<br>「共通のコンセント」</span></div></div>
+    <div class="step f"><div class="arrow">→</div><div class="box"><b>Blender</b><span>無料の3Dソフト。<br>実際に形を作る場所</span></div></div>
   </div>
-  <p class="loopnote">↺ AIは出来上がりの画像を自分で見て、おかしければ直す</p>
-  <div class="grid2" style="margin-top:22px">
-    <div class="card"><h3>MCP とは？</h3><p>AIがいろいろな道具（3Dソフト、表計算、社内システム…）を操作するための<strong>共通の決まり</strong>。コンセントの形が同じなら、どの家電も挿せるのと同じ。</p></div>
-    <div class="card"><h3>人は何をする？</h3><p>Blenderの操作方法を知らなくても始められる。人がやるのは<strong>「何を作りたいか」を伝える</strong>ことと、<strong>出来を確かめる</strong>こと。</p></div>
-  </div>
-  <aside class="notes">（1:00〜2:00）Claude Code はAIの作業係、Blender は3Dソフト、MCP はその2つをつなぐ共通規格です。USBやコンセントのように、形が決まっているので色々な道具をAIにつなげられます。AIは裏でBlender用のプログラムを書いて実行し、出来上がりの画像を自分で見てチェックします。</aside>
+  <div class="loop f">↺ AIは<b class="warmtxt">出来上がりの画像を自分で見て</b>、おかしければ自分で直す</div>
 </section>
 
-<!-- 4 実際の流れ -->
-<section class="slide">
-  <p class="kicker">3Dモデリング</p>
-  <h2>実際にはこう進む</h2>
-  <div class="grid2" style="grid-template-columns: 1.1fr .9fr; align-items:start">
-    <div>
-      <div class="card step"><h3>① 日本語で頼む</h3><p class="sub">「白いマグカップを作って。取っ手は右に」</p></div>
-      <div class="card step"><h3>② AIがBlenderを操作する</h3><p class="sub">形を作る・色をつける・照明とカメラを置く</p></div>
-      <div class="card step"><h3>③ AIが自分で画像を見て確認</h3><p class="sub">「取っ手がめり込んでいる」→ 自分で直す</p></div>
-      <div class="card step"><h3>④ 人が見て、追加で頼む</h3><p class="sub">「もう少し濃い色に」「大きく写して」</p></div>
-    </div>
-    <div>
-      <img src="images/prompt_c.jpg" alt="AIがBlenderで作った藍色のマグカップ" style="width:100%;border-radius:12px;border:1px solid var(--line)">
-      <p class="small sub" style="margin-top:10px">この資料の画像は、すべて実際に Claude Code が Blender MCP で作ったもの。作る途中で「取っ手の内側がカップの中に突き出ている」「色が薄い」とAI自身が気づいて直している。</p>
-    </div>
-  </div>
-  <aside class="notes">（2:00〜3:00）流れはこの4段階です。ポイントは③で、AIは作りっぱなしではなく、自分で画像を撮って確認します。この資料用のマグカップも、AIが作る途中で取っ手のはみ出しや色の薄さに気づいて直しました。人は最後に見て、好みを伝えるだけです。</aside>
-</section>
-
-<!-- 5 AI駆動開発とは -->
+<!-- 5 役割分担 -->
 <section class="slide">
   <p class="kicker">AI駆動開発</p>
-  <h2>役割分担が変わる</h2>
+  <h2>変わるのは<span class="grad">役割分担</span></h2>
   <table>
     <tr><th></th><th>これまで</th><th>AI駆動開発</th></tr>
-    <tr><td>手を動かす</td><td>人（操作・プログラムを覚える）</td><td><strong>AI</strong>（操作もプログラムも書く）</td></tr>
-    <tr><td>何を作るか決める</td><td>人</td><td><strong>人</strong>（ここが一番大事になる）</td></tr>
-    <tr><td>出来を確かめる</td><td>人</td><td><strong>人 ＋ AI</strong>（AIもチェックするが、最後は人）</td></tr>
-    <tr><td>速さ</td><td>覚えるまで時間がかかる</td><td>試作が数分。何度も作り直せる</td></tr>
+    <tr class="f"><td>手を動かす</td><td>人（操作・プログラムを覚える）</td><td><b>AI</b>（操作もプログラムも書く）</td></tr>
+    <tr class="f"><td>何を作るか決める</td><td>人</td><td><b>人</b>（ここが一番大事になる）</td></tr>
+    <tr class="f"><td>出来を確かめる</td><td>人</td><td><b>人 ＋ AI</b>（最後は人）</td></tr>
+    <tr class="f"><td>速さ</td><td>覚えるまで時間がかかる</td><td>試作が数分。何度でも作り直せる</td></tr>
   </table>
-  <div class="callout">人の仕事は「作業」から<strong>「決める・伝える・確かめる」</strong>へ移っていく。</div>
-  <aside class="notes">（3:00〜4:00）AI駆動開発とは、手を動かす部分をAIに任せる開発のやり方です。人の仕事がなくなるのではなく、「何を作るか決める」「伝える」「確かめる」に重心が移ります。試作がすぐできるので、作っては直すを何度も回せるのが大きな違いです。</aside>
+  <div class="callout f">人の仕事は「作業」から <b class="grad">「決める・伝える・確かめる」</b> へ。</div>
 </section>
 
-<!-- 6 指示による違い -->
+<!-- 6 実験 -->
 <section class="slide">
-  <p class="kicker">指示プロンプトによる違い</p>
-  <h2 style="margin-bottom:18px">同じAI・同じ道具で、指示だけを変えた</h2>
-  <div class="cmp">
-    <div class="col">
-      <div class="prompt"><span class="lv">指示 A ・ ひとこと</span><br>「コップを作って」</div>
-      <img src="images/prompt_a.jpg" alt="ただの灰色の円柱">
-      <div class="res">ただの<b>円柱</b>。中は空いておらず、取っ手もない。AIが一番単純に解釈した。</div>
-    </div>
-    <div class="col">
-      <div class="prompt"><span class="lv">指示 B ・ 少し具体的</span><br>「白い陶器のマグカップを作って。取っ手をつけて」</div>
-      <img src="images/prompt_b.jpg" alt="白いマグカップ">
-      <div class="res"><b>マグカップ</b>になった。ただし大きさ・厚み・細部はAI任せ。</div>
-    </div>
-    <div class="col">
-      <div class="prompt"><span class="lv">指示 C ・ 仕様として書く</span><br>「高さ9.5cm・口の直径8cm、底へ少しすぼめる。縁の厚さ4mmで丸める。取っ手は右、指2本が入る大きさ。上2/3は藍色のつやのある釉薬、下1/3は素焼きの土色でつやなし」</div>
-      <img src="images/prompt_c.jpg" alt="藍色と土色の二色のマグカップ">
-      <div class="res"><b>指定どおり</b>。寸法・形・色分けまで、作り直しなしで一致。</div>
-    </div>
+  <p class="kicker">実験</p>
+  <h2>同じAI・同じ道具。<br>変えたのは<span class="grad">指示だけ</span>。</h2>
+  <div class="pat f">
+    <div class="card"><span class="lv">指示 A</span><div class="q">「コップを作って」</div></div>
+    <div class="card"><span class="lv">指示 B</span><div class="q">「白い陶器のマグカップを作って。取っ手をつけて」</div></div>
+    <div class="card"><span class="lv c">指示 C</span><div class="q">寸法・形・色まで<br>仕様として書く</div></div>
+    <div class="card"><span class="lv d">C ＋ 追加の修正</span><div class="q">できた物を見て<br>気づいた点を伝える</div></div>
   </div>
-  <aside class="notes">（4:00〜5:30）ここが今日の中心です。3枚とも同じAI、同じBlenderで作りました。違いは指示だけ。Aは「コップ」とだけ言ったので、ただの円柱になりました。AIは書かれていないことを推測で埋めるので、情報が少ないと一番単純な形になります。Cのように寸法や色を書くと、一発で狙った物になります。</aside>
 </section>
 
-<!-- 7 よい指示の5要素 -->
+<!-- 7 動画A -->
+<section class="slide vslide">
+  <video src="videos/prompt_a.mp4" poster="videos/prompt_a.jpg" muted playsinline preload="auto" aria-label="指示A「コップを作って」の動画"></video>
+  <button class="replay">↻ もう一度</button>
+</section>
+
+<!-- 8 動画B -->
+<section class="slide vslide">
+  <video src="videos/prompt_b.mp4" poster="videos/prompt_b.jpg" muted playsinline preload="auto" aria-label="指示B「白い陶器のマグカップ」の動画"></video>
+  <button class="replay">↻ もう一度</button>
+</section>
+
+<!-- 9 動画C -->
+<section class="slide vslide">
+  <video src="videos/prompt_c.mp4" poster="videos/prompt_c.jpg" muted playsinline preload="auto" aria-label="指示C 仕様として書いた場合の動画"></video>
+  <button class="replay">↻ もう一度</button>
+</section>
+
+<!-- 10 動画D -->
+<section class="slide vslide">
+  <video src="videos/prompt_d.mp4" poster="videos/prompt_d.jpg" muted playsinline preload="auto" aria-label="指示C＋追加の修正の動画"></video>
+  <button class="replay">↻ もう一度</button>
+</section>
+
+<!-- 11 比較 -->
 <section class="slide">
-  <p class="kicker">指示プロンプトによる違い</p>
-  <h2>AIは「書いていないことを推測で埋める」</h2>
+  <p class="kicker">結果を並べる</p>
+  <h2>具体的に書くほど、<span class="grad">推測が減る</span></h2>
+  <div class="cmp4">
+    <div class="col"><img src="videos/prompt_a.jpg" alt="指示Aの結果：円柱"><div class="meta"><div class="chars">7<small>文字</small></div><div class="what">A：ひとこと</div></div></div>
+    <div class="col"><img src="videos/prompt_b.jpg" alt="指示Bの結果：白いマグ"><div class="meta"><div class="chars">22<small>文字</small></div><div class="what">B：少し具体的</div></div></div>
+    <div class="col"><img src="videos/prompt_c.jpg" alt="指示Cの結果：二色のマグ"><div class="meta"><div class="chars">95<small>文字</small></div><div class="what">C：仕様として書く</div></div></div>
+    <div class="col"><img src="videos/prompt_d.jpg" alt="追加修正の結果：コースター付きのマグ"><div class="meta"><div class="chars">+55<small>文字</small></div><div class="what">C＋追加の修正</div></div></div>
+  </div>
+  <div class="callout f">最初から完璧でなくていい。<b class="grad">見て、追加で伝えれば</b>近づけられる。</div>
+</section>
+
+<!-- 12 5要素 -->
+<section class="slide">
+  <p class="kicker">良い指示とは</p>
+  <h2>AIは<span class="grad">書いていないことを推測で埋める</span></h2>
   <div class="five">
-    <div class="card"><b>目的</b><span>何のために？<br>誰が使う？</span></div>
-    <div class="card"><b>形・量</b><span>大きさ・数・<br>範囲</span></div>
-    <div class="card"><b>見た目・質</b><span>色・素材・<br>雰囲気</span></div>
-    <div class="card"><b>条件</b><span>やってはいけない<br>こと・制約</span></div>
-    <div class="card"><b>完成の基準</b><span>どうなったら<br>「できた」？</span></div>
+    <div class="card f"><b>目的</b><span>何のために？<br>誰が使う？</span></div>
+    <div class="card f"><b>形・量</b><span>大きさ・数・<br>範囲</span></div>
+    <div class="card f"><b>見た目・質</b><span>色・素材・<br>雰囲気</span></div>
+    <div class="card f"><b>条件</b><span>やってはいけない<br>こと・制約</span></div>
+    <div class="card f"><b>完成の基準</b><span>どうなったら<br>「できた」？</span></div>
   </div>
-  <div class="grid2">
-    <div class="card warm"><h3>よくある失敗</h3><p>「いい感じにして」「ちゃんと作って」<br><span class="sub">→「いい感じ」の中身はAIに伝わらない</span></p></div>
-    <div class="card ok"><h3>コツ</h3><p>新しく入った同僚に頼むつもりで書く。<br><span class="sub">分からないことは「先に質問して」と添える</span></p></div>
+  <div class="grid2 tips f">
+    <div class="card" style="border-color:rgba(255,184,107,.45)"><h3 class="warmtxt">よくある失敗</h3><p>「いい感じにして」── その「いい感じ」はAIに伝わらない</p></div>
+    <div class="card" style="border-color:rgba(110,231,168,.45)"><h3 style="color:var(--ok)">コツ</h3><p>新しく入った同僚に頼むつもりで書く。<br>分からない点は「先に質問して」と添える</p></div>
   </div>
-  <aside class="notes">（5:30〜6:30）指示Cに入っていたのは、この5つです。全部そろえる必要はありませんが、抜けている所はAIが勝手に決めます。コツは、新しく入った同僚に仕事を頼むつもりで書くこと。「わからないことがあれば先に質問して」と一言添えるのも効果的です。これは3Dに限らず、文章でも資料でもプログラムでも同じです。</aside>
 </section>
 
-<!-- 8 仕様駆動開発 -->
+<!-- 13 仕様駆動開発 -->
 <section class="slide">
   <p class="kicker">仕様駆動開発</p>
-  <h2>指示を「その場の一言」から「残る仕様書」へ</h2>
-  <div class="grid2" style="grid-template-columns: 1fr 1fr; align-items:start">
-    <div>
-      <div class="flow" style="flex-direction:column;gap:8px;margin:0">
-        <div class="box hl" style="text-align:left"><b>① 仕様を書く</b><span>何を・なぜ・どこまで。AIと相談しながら書いてよい</span></div>
-        <div class="box" style="text-align:left"><b>② AIが作る</b><span>仕様を読んで手を動かす</span></div>
-        <div class="box" style="text-align:left"><b>③ 仕様と照らして確かめる</b><span>「完成の基準」を満たしたか</span></div>
-        <div class="box" style="text-align:left"><b>④ 直すのは仕様から</b><span>作り直しても、仕様が残るので再現できる</span></div>
-      </div>
+  <h2>指示を<span class="grad">「残る仕様書」</span>にする</h2>
+  <div class="grid2" style="align-items:start">
+    <div class="vsteps">
+      <div class="card f"><h3>① 仕様を書く</h3><p>何を・なぜ・どこまで。AIと相談しながら書いてよい</p></div>
+      <div class="card f"><h3>② AIが作る</h3><p>仕様を読んで手を動かす</p></div>
+      <div class="card f"><h3>③ 仕様と照らして確かめる</h3><p>「完成の基準」を満たしたか</p></div>
+      <div class="card f"><h3>④ 直すのは仕様から</h3><p>仕様が残るので、誰が頼んでも同じ物を作り直せる</p></div>
     </div>
-    <div>
-      <pre># マグカップ 仕様
-## 目的
+<pre><span class="h"># マグカップ 仕様</span>
+<span class="h">## 目的</span>
 社内イベントの記念品の見本
 
-## 形
+<span class="h">## 形</span>
 - 高さ 9.5cm / 口の直径 8cm
 - 縁の厚さ 4mm、縁は丸める
 - 取っ手は右、指2本が入る
 
-## 見た目
-- 上 2/3：藍色・つやあり
+<span class="h">## 見た目</span>
+- 上 2/3：藍色・つやあり（内側も）
 - 下 1/3：素焼きの土色・つやなし
 
-## 完成の基準
+<span class="h">## 完成の基準</span>
 - 斜め上からの画像で寸法と色分けが分かる</pre>
-    </div>
   </div>
-  <aside class="notes">（6:30〜8:00）仕様駆動開発は、AIへの指示を、その場限りの会話ではなく、ファイルとして残る「仕様書」にしておくやり方です。仕様があれば、誰が頼んでも同じ物が作れますし、チームで内容を確認でき、直すときも仕様から直せます。仕様そのものをAIと相談しながら書くのもおすすめです。</aside>
 </section>
 
-<!-- 9 これからどう進めるか -->
+<!-- 14 進め方 -->
 <section class="slide">
   <p class="kicker">これからの進め方</p>
-  <h2>3Dに限らず、明日からできること</h2>
-  <div class="steps">
-    <div class="card"><div class="big-num">1</div><h3>小さく試す</h3><p class="sub">毎日の作業から1つ。文章の下書き、表の整理、簡単なツールなど</p></div>
-    <div class="card"><div class="big-num">2</div><h3>指示を残す</h3><p class="sub">うまくいった指示はひな形にして、次から使い回す</p></div>
-    <div class="card"><div class="big-num">3</div><h3>確かめ方を決める</h3><p class="sub">「完成の基準」を先に決めておく。最後は必ず人が見る</p></div>
-    <div class="card"><div class="big-num">4</div><h3>チームで共有</h3><p class="sub">仕様とひな形を共有すると、チーム全体の質がそろう</p></div>
+  <h2>3Dに限らず、<span class="grad">明日からできること</span></h2>
+  <div class="grid4">
+    <div class="card f"><div class="big-num grad">1</div><h3>小さく試す</h3><p>毎日の作業から1つ。文章の下書き、表の整理、簡単なツールなど</p></div>
+    <div class="card f"><div class="big-num grad">2</div><h3>指示を残す</h3><p>うまくいった指示はひな形にして、次から使い回す</p></div>
+    <div class="card f"><div class="big-num grad">3</div><h3>確かめ方を決める</h3><p>「完成の基準」を先に決める。最後は必ず人が見る</p></div>
+    <div class="card f"><div class="big-num grad">4</div><h3>チームで共有</h3><p>仕様とひな形を共有して、チーム全体の質をそろえる</p></div>
   </div>
-  <div class="callout warm" style="margin-top:28px"><b>守ること：</b>会社のルールに従う ／ 機密情報・個人情報をAIに入れない ／ AIの出力をそのまま信じず確認する</div>
-  <aside class="notes">（8:00〜9:15）進め方は4段階です。いきなり大きな仕事に使わず、小さな作業から。うまくいった指示はひな形として残し、使い回します。確かめ方は先に決めておき、最後は必ず人が確認します。そしてチームで共有する。注意点として、会社のルールを守り、機密情報は入れないこと。AIはもっともらしい間違いもするので、確認は人の責任です。</aside>
+  <div class="callout warm f"><b class="warmtxt">守ること：</b>会社のルールに従う ／ 機密情報・個人情報をAIに入れない ／ 出力をそのまま信じず確認する</div>
 </section>
 
-<!-- 10 まとめ -->
+<!-- 15 まとめ -->
 <section class="slide cover">
-  <p class="kicker">まとめ</p>
-  <h2 style="font-size:46px">AIは作業を引き受けてくれる。<br>人は<strong>「何を作るか」</strong>をはっきり伝える。</h2>
-  <div class="card blue" style="max-width:860px;margin-top:10px">
-    <h3>今日の宿題（5分でOK）</h3>
-    <p style="margin:0">身近な作業を1つ選び、<b>目的・形や量・見た目・条件・完成の基準</b>の5つを書いてAIに頼んでみる。<br><span class="sub">ひとことで頼んだ場合と、結果を比べてみる。</span></p>
+  <img class="bgimg" src="images/cover.jpg" alt="">
+  <div class="shade"></div>
+  <div class="inner" style="max-width:900px">
+    <p class="kicker">まとめ</p>
+    <h1 style="font-size:54px">AIは作業を引き受ける。<br>人は<span class="grad">「何を作るか」</span>を<br>はっきり伝える。</h1>
+    <div class="card f" style="margin-top:30px;background:rgba(8,12,24,.75)">
+      <h3>今日の宿題（5分でOK）</h3>
+      <p style="color:#d5dcf0">身近な作業を1つ選び、<b>目的・形や量・見た目・条件・完成の基準</b>を書いてAIに頼んでみる。ひとことで頼んだ場合と比べてみる。</p>
+    </div>
   </div>
-  <aside class="notes">（9:15〜10:00）まとめです。AIは手を動かす作業を引き受けてくれます。人は何を作るかをはっきり伝えることが仕事になります。今日の宿題として、身近な作業を1つ、5つの要素で書いて頼んでみてください。ひとことで頼んだ場合と比べると、違いが実感できます。ありがとうございました。</aside>
 </section>
 
 </div></div>
 
+<div id="notes"></div>
+
 <div id="bar">
-  <button id="prev" aria-label="前のページ">← 前</button>
-  <span id="pageNo">1 / 10</span>
-  <button id="next" aria-label="次のページ">次 →</button>
+  <button id="prev" aria-label="前へ">← 前</button>
+  <span id="pageNo">1 / 15</span>
+  <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
-  <button id="notesBtn">話す内容メモ</button>
-  <button id="fsBtn">全画面</button>
-  <span class="hint">← → キーでも移動</span>
+  <button id="notesBtn">話す内容メモ (N)</button>
+  <a href="script.html" target="_blank" rel="noopener">発表原稿</a>
+  <button id="fsBtn">全画面 (F)</button>
+  <span class="hint">← → で進む</span>
 </div>
 
+<script src="script-data.js"></script>
 <script>
 (function () {
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var stage = document.getElementById('stage');
   var viewport = document.getElementById('viewport');
-  var cur = 0;
+  var notes = document.getElementById('notes');
+  var SCRIPT = window.TALK_SCRIPT || [];
+  var cur = 0, step = 0, frameTimer = null;
 
   slides.forEach(function (s, i) {
     if (i === 0) return;
-    var n = document.createElement('div');
-    n.className = 'num';
-    n.textContent = (i + 1) + ' / ' + slides.length;
+    var n = document.createElement('div'); n.className = 'num';
+    n.textContent = String(i + 1).padStart(2, '0') + ' / ' + slides.length;
     s.appendChild(n);
   });
+  function frags(i) { return Array.prototype.slice.call(slides[i].querySelectorAll('.f')); }
 
   function fit() {
-    var w = viewport.clientWidth, h = viewport.clientHeight;
-    var s = Math.min((w - 24) / 1280, (h - 24) / 720);
+    var s = Math.min((viewport.clientWidth - 24) / 1280, (viewport.clientHeight - 24) / 720);
     stage.style.transform = 'scale(' + Math.max(s, 0.1) + ')';
   }
 
-  function show(i) {
-    cur = Math.max(0, Math.min(slides.length - 1, i));
-    slides.forEach(function (s, k) { s.classList.toggle('active', k === cur); });
+  function applySteps() {
+    var fs = frags(cur);
+    fs.forEach(function (el, k) {
+      el.classList.toggle('shown', k < step - 1);
+      el.classList.toggle('now', k === step - 1);
+    });
+    renderNotes();
+  }
+
+  function renderNotes() {
+    var sc = SCRIPT[cur];
+    if (!sc) { notes.innerHTML = ''; return; }
+    var h = '<div class="nt">' + (cur + 1) + '. ' + sc.title + '　' + sc.time + '</div>';
+    sc.steps.forEach(function (t, k) { h += '<p class="' + (k === step ? 'cur' : '') + '">' + t + '</p>'; });
+    notes.innerHTML = h;
+    var c = notes.querySelector('p.cur'); if (c && document.body.classList.contains('show-notes')) c.scrollIntoView({ block: 'nearest' });
+  }
+
+  function onEnter(s) {
+    var v = s.querySelector('video');
+    if (v) { try { v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+    var fr = s.querySelector('[data-frames]');
+    if (fr) startFrames(fr, s);
+  }
+  function onLeave(s) {
+    var v = s.querySelector('video'); if (v) v.pause();
+    if (frameTimer) { clearTimeout(frameTimer); frameTimer = null; }
+  }
+
+  function startFrames(fr, s) {
+    var imgs = fr.querySelectorAll('img'), chips = s.querySelectorAll('.chip'), k = 0;
+    function tick() {
+      for (var j = 0; j < imgs.length; j++) { imgs[j].classList.toggle('on', j === k); if (chips[j]) chips[j].classList.toggle('on', j === k); }
+      var wait = k === imgs.length - 1 ? 3200 : 1100;
+      k = (k + 1) % imgs.length;
+      frameTimer = setTimeout(tick, wait);
+    }
+    if (frameTimer) clearTimeout(frameTimer);
+    tick();
+  }
+
+  function show(i, atEnd) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    if (cur >= 0 && i !== cur) onLeave(slides[cur]);
+    var prev = cur;
+    slides.forEach(function (s, k) {
+      s.classList.toggle('active', k === i);
+      s.classList.toggle('left', k < i);
+    });
+    cur = i;
+    step = atEnd ? frags(i).length : 0;
+    applySteps();
     document.getElementById('pageNo').textContent = (cur + 1) + ' / ' + slides.length;
     document.querySelector('#progress i').style.width = ((cur + 1) / slides.length * 100) + '%';
     if (location.hash !== '#' + (cur + 1)) history.replaceState(null, '', '#' + (cur + 1));
+    if (i !== prev || !slides[i].dataset.entered) { slides[i].dataset.entered = '1'; onEnter(slides[i]); }
   }
 
-  function toggleNotes() { document.body.classList.toggle('show-notes'); }
+  function next() { if (step < frags(cur).length) { step++; applySteps(); } else if (cur < slides.length - 1) show(cur + 1, false); }
+  function prev() { if (step > 0) { step--; applySteps(); } else if (cur > 0) show(cur - 1, true); }
+  function toggleNotes() { document.body.classList.toggle('show-notes'); renderNotes(); }
   function toggleFs() {
     if (!document.fullscreenElement) { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); }
     else if (document.exitFullscreen) document.exitFullscreen();
   }
 
-  document.getElementById('prev').onclick = function () { show(cur - 1); };
-  document.getElementById('next').onclick = function () { show(cur + 1); };
+  document.getElementById('prev').onclick = prev;
+  document.getElementById('next').onclick = next;
   document.getElementById('notesBtn').onclick = toggleNotes;
   document.getElementById('fsBtn').onclick = toggleFs;
+  Array.prototype.forEach.call(document.querySelectorAll('.replay'), function (b) {
+    b.onclick = function (e) { e.stopPropagation(); var v = b.parentNode.querySelector('video'); v.currentTime = 0; v.play(); };
+  });
 
   document.addEventListener('keydown', function (e) {
     var k = e.key;
-    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') { e.preventDefault(); show(cur + 1); }
-    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); show(cur - 1); }
-    else if (k === 'Home') show(0);
-    else if (k === 'End') show(slides.length - 1);
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') { e.preventDefault(); next(); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); prev(); }
+    else if (k === 'Home') show(0, false);
+    else if (k === 'End') show(slides.length - 1, true);
     else if (k === 'n' || k === 'N') toggleNotes();
     else if (k === 'f' || k === 'F') toggleFs();
   });
@@ -385,15 +499,20 @@
   viewport.addEventListener('touchend', function (e) {
     if (tx === null) return;
     var dx = e.changedTouches[0].clientX - tx;
-    if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 50) { if (dx < 0) next(); else prev(); }
     tx = null;
   });
 
   window.addEventListener('resize', fit);
   document.addEventListener('fullscreenchange', fit);
-  var start = parseInt((location.hash || '').replace('#', ''), 10);
   fit();
-  show(isNaN(start) ? 0 : start - 1);
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  var atEnd = /[?&]all/.test(location.search);
+  cur = -1;
+  show(isNaN(start) ? 0 : start - 1, atEnd);
+  var m = /[?&]step=(\d+)/.exec(location.search);
+  if (m) { step = Math.min(+m[1], frags(cur).length); applySteps(); }
+  if (/[?&]notes/.test(location.search)) toggleNotes();
 })();
 </script>
 </body>

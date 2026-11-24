@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>発表原稿</title>
+<style>
+  :root { --ink: #1d2433; --sub: #5b6475; --line: #dde1ea; --accent: #2b5fd9; --warm: #c2410c; --bg: #f5f6f9; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Yu Gothic UI", "Yu Gothic", "Hiragino Sans", "Meiryo", system-ui, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 40px 16px 80px; }
+  header h1 { font-size: 28px; margin: 0 0 6px; }
+  header p { color: var(--sub); margin: 0 0 6px; line-height: 1.7; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--sub); margin: 14px 0 28px; }
+  .legend b { color: var(--warm); }
+  section { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 14px; break-inside: avoid; }
+  .head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .no { font-weight: 800; color: var(--accent); font-size: 18px; min-width: 2em; }
+  .title { font-weight: 700; font-size: 18px; flex: 1; }
+  .time { font-size: 13px; color: var(--sub); font-variant-numeric: tabular-nums; }
+  .say { font-size: 16.5px; line-height: 1.9; margin: 0 0 8px; }
+  .cue { display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: var(--warm); border-radius: 4px; padding: 1px 7px; margin-right: 8px; vertical-align: 2px; }
+  .total { color: var(--sub); font-size: 14px; margin-top: 20px; }
+  a { color: var(--accent); }
+  @media print {
+    body { background: #fff; }
+    main { padding: 0; }
+    section { border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 12px 0; }
+    .noprint { display: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>発表原稿：AIに「作って」と頼んだら、ここまでできる。</h1>
+    <p>約10分。スライドは <a href="index.html">資料</a> を開き、<b>→ キー</b>で進めます。発表中は資料で <b>N キー</b>を押すと、いま話す段落が光った状態でこの原稿が下に出ます。</p>
+    <div class="legend"><span><b>▶ 押す</b>：→ キーを押して次の項目を出す</span><span>（動画を見せる）：動画は自動で流れる。止めて話してもよい</span></div>
+    <p class="noprint"><button onclick="window.print()">印刷する</button></p>
+  </header>
+  <div id="list"></div>
+  <p class="total">※ 時間は目安です。押している場合は 12（5要素）と 14（進め方）の説明を短くします。</p>
+</main>
+<script src="script-data.js"></script>
+<script>
+  var list = document.getElementById('list');
+  (window.TALK_SCRIPT || []).forEach(function (s, i) {
+    var sec = document.createElement('section');
+    var h = '<div class="head"><span class="no">' + (i + 1) + '</span><span class="title">' + s.title + '</span><span class="time">' + s.time + '</span></div>';
+    s.steps.forEach(function (t, k) {
+      h += '<p class="say">' + (k > 0 ? '<span class="cue">▶ 押す</span>' : '') + t + '</p>';
+    });
+    sec.innerHTML = h;
+    list.appendChild(sec);
+  });
+</script>
+</body>
+</html>
