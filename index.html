@@ -275,11 +275,11 @@
   pre.spec { font-size: 12.5px; line-height: 1.34; padding: 12px 16px; }
   .vsteps .card { padding: 10px 20px; }
   .vsteps .card h3 { font-size: 19px; }
-  .vsteps .card p { font-size: 15px; }
+  .vsteps .card p { font-size: 14.5px; }
   .vsteps { gap: 8px; }
   .five .card { padding: 24px 10px; }
   .five b { font-size: 24px; }
-  .summary li { font-size: 22px; margin-bottom: 12px; }
+  .summary li { font-size: 21px; margin-bottom: 10px; }
   .usedtok { position: absolute; right: 32px; bottom: 46px; margin: 0; text-align: right; font-size: 12.5px; line-height: 1.6; color: rgba(255,255,255,.55); }
   .concl { font-size: 32px; font-weight: 700; line-height: 1.5; margin: 0 0 22px; }
   .point { font-size: 19px; line-height: 1.6; margin: -14px 0 16px; padding: 6px 0 6px 14px; border-left: 4px solid var(--accent); }
@@ -315,7 +315,7 @@
   <div class="inner">
     <p class="kicker">社内勉強会</p>
     <h1>AIによる3Dモデリングと<br>仕様駆動開発</h1>
-    <p class="lead">Claude Code と Blender MCP の実例から考える、<br>AIにコードを書かせるときの進め方</p>
+    <p class="lead">Claude Code と Blender MCP の実例から考える、<br>AIに開発を任せるときの進め方</p>
   </div>
 </section>
 
@@ -347,10 +347,10 @@
 <!-- 6 役割分担 -->
 <section class="slide">
   <p class="kicker">役割分担</p>
-  <h2>AIにコードを書かせると変わる役割分担</h2>
+  <h2>AIに任せると変わる役割分担</h2>
   <table>
-    <tr><th></th><th>これまで</th><th>AIに書かせる場合</th></tr>
-    <tr class="f"><td>コードを書く</td><td>人</td><td>AI</td></tr>
+    <tr><th></th><th>これまで</th><th>AIに任せる場合</th></tr>
+    <tr class="f"><td>設計書・コード・テストを書く</td><td>人</td><td>AIが書き、人がレビューする</td></tr>
     <tr class="f"><td>何を作るか決める</td><td>人</td><td>人</td></tr>
     <tr class="f"><td>結果を確かめる</td><td>人</td><td>AIも確認するが、最終確認は人</td></tr>
     <tr class="f"><td>試作にかかる時間</td><td>数時間〜数日</td><td>数分。作り直しも容易</td></tr>
@@ -583,7 +583,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
   <h2>仕様駆動開発の進め方</h2>
   <div class="grid2" style="align-items:start">
     <div class="vsteps">
-      <div class="card f"><h3>1. 仕様をファイルに書く</h3><p>前のページの5項目を、リポジトリの中の Markdown に書きます。</p></div>
+      <div class="card f"><h3>1. 仕様をファイルに書く</h3><p>前のページの5項目を Markdown に書きます。下書きや、より詳しい設計書はAIに書かせ、人が決めてレビューします。</p></div>
       <div class="card f"><h3>2. 実装の前に、計画と質問を出させる</h3><p>変更するファイルと手順をAIに書かせ、不明点は質問させます。</p></div>
       <div class="card f"><h3>3. テストを先に書かせる</h3><p>受け入れ基準をテストにし、実装前に失敗することを確かめます。</p></div>
       <div class="card f"><h3>4. 実装させ、テストとレビューで確かめる</h3><p>テストが通ることを確認し、差分は人がレビューします。</p></div>
@@ -640,7 +640,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
       <p style="margin-top:8px">質問にはそれぞれ案が付いていて、人は「案のとおり」か、違う点だけを答えました。</p>
     </div>
   </div>
-  <div class="callout f">回答で決まったことは、Claude Code が spec.md に追記してコミットしました（39行）。コードを書く前に、決まっていない点が10件見つかったことになります。</div>
+  <div class="callout f">回答で決まったことは、Claude Code が spec.md に追記してコミットしました（39行）。AIが書くのはコードだけではなく、計画や仕様の文書も書きます。決めるのは人です。</div>
 </section>
 
 <!-- SDD 実例2 -->
@@ -748,9 +748,10 @@ cede1c5 実装: cancelled の注文を取り込まず、対象外として数え
   <div class="shade"></div>
   <div class="inner" style="max-width:900px">
     <p class="kicker">まとめ</p>
-    <p class="concl">仕様駆動開発では、人は「仕様を書くこと」と「結果を確かめること」に工数を使います。</p>
+    <p class="concl">仕様駆動開発では、人は「何を作るかを決めること」と「結果を確かめること」に工数を使います。</p>
     <ul class="summary">
-      <li>指示に書かなかった点は、AIが決めます。作らせる前に仕様を書き、決まっていない点はAIに質問させます。</li>
+      <li>指示に書かなかった点は、AIが決めます。作らせる前に仕様を決め、決まっていない点はAIに質問させます。</li>
+      <li>設計書・コード・テストはAIが書けます。人は、その内容を決めてレビューします。</li>
       <li>仕様を書いても、トークン消費量はほとんど変わりません。減るのは、人が指示を出し直す工数です。</li>
       <li>完成したかどうかは、AIの報告ではなく、テストとレビューで判断します。</li>
     </ul>
