@@ -200,7 +200,7 @@
     <div>
       <h2 style="font-size:44px">この灯台、<br><span class="grad">AIが一から</span><br>作りました。</h2>
       <p class="sub">Claude Code が Blender を操作して、6つの段階で組み立てた。</p>
-      <div class="callout f" style="margin-top:26px;font-size:22px">人は Blender を<b class="warmtxt">一度も操作していない</b>。<br>したのは、日本語で頼むことだけ。</div>
+      <div class="callout f" style="margin-top:26px;font-size:22px">人は Blender を<b class="warmtxt">一度も操作していない</b>。<br>AIが形を作り、画像で確かめて直した。</div>
     </div>
     <div>
       <div class="frames" data-frames>
@@ -254,6 +254,7 @@
 <section class="slide">
   <p class="kicker">実験</p>
   <h2>同じAI・同じ道具。<br>変えたのは<span class="grad">指示だけ</span>。</h2>
+  <p class="sub" style="margin:-14px 0 18px">毎回、前の会話を知らない新しい Claude Code に指示だけを渡し、出てきた結果をそのまま載せています。</p>
   <div class="pat f">
     <div class="card"><span class="lv">指示 A</span><div class="q">「コップを作って」</div></div>
     <div class="card"><span class="lv">指示 B</span><div class="q">「白い陶器のマグカップを作って。取っ手をつけて」</div></div>
@@ -266,6 +267,19 @@
 <section class="slide vslide">
   <video src="videos/prompt_a.mp4" poster="videos/prompt_a.jpg" muted playsinline preload="auto" aria-label="指示A「コップを作って」の動画"></video>
   <button class="replay">↻ もう一度</button>
+</section>
+
+<!-- 7b 指示Aを4回 -->
+<section class="slide">
+  <p class="kicker">指示 A を 4 回</p>
+  <h2>同じ「コップを作って」でも、<span class="grad">AIが決めている</span></h2>
+  <div class="cmp4">
+    <div class="col"><img src="videos/a_run1.jpg" alt="1回目：ガラスのコップ"><div class="meta"><div class="what">1回目：ガラス<br>直径8.5cm・高さ11cm</div></div></div>
+    <div class="col"><img src="videos/a_run2.jpg" alt="2回目：ガラスのコップ"><div class="meta"><div class="what">2回目：ガラス<br>直径8.2cm・高さ12cm</div></div></div>
+    <div class="col"><img src="videos/a_run3.jpg" alt="3回目：ガラスのコップ"><div class="meta"><div class="what">3回目：ガラス<br>直径9.3cm・高さ12.3cm</div></div></div>
+    <div class="col"><img src="videos/a_run4.jpg" alt="4回目：取っ手つきの白い陶器のコップ"><div class="meta"><div class="what">4回目：<b style="color:var(--warm)">陶器・取っ手つき</b><br>直径9cm・高さ10cm</div></div></div>
+  </div>
+  <div class="callout f">どれも「それらしい」コップ。でも素材・形・大きさは、書いていないので<b class="grad">AIが推測で選んだ</b>もの。</div>
 </section>
 
 <!-- 8 動画B -->
@@ -291,12 +305,12 @@
   <p class="kicker">結果を並べる</p>
   <h2>具体的に書くほど、<span class="grad">推測が減る</span></h2>
   <div class="cmp4">
-    <div class="col"><img src="videos/prompt_a.jpg" alt="指示Aの結果：円柱"><div class="meta"><div class="chars">7<small>文字</small></div><div class="what">A：ひとこと</div></div></div>
-    <div class="col"><img src="videos/prompt_b.jpg" alt="指示Bの結果：白いマグ"><div class="meta"><div class="chars">22<small>文字</small></div><div class="what">B：少し具体的</div></div></div>
+    <div class="col"><img src="videos/a_snap.jpg" alt="指示Aの結果：ガラスのコップ"><div class="meta"><div class="chars">7<small>文字</small></div><div class="what">A：ひとこと</div></div></div>
+    <div class="col"><img src="videos/prompt_b.jpg" alt="指示Bの結果：白い陶器のマグ"><div class="meta"><div class="chars">22<small>文字</small></div><div class="what">B：少し具体的</div></div></div>
     <div class="col"><img src="videos/prompt_c.jpg" alt="指示Cの結果：二色のマグ"><div class="meta"><div class="chars">95<small>文字</small></div><div class="what">C：仕様として書く</div></div></div>
     <div class="col"><img src="videos/prompt_d.jpg" alt="追加修正の結果：コースター付きのマグ"><div class="meta"><div class="chars">+55<small>文字</small></div><div class="what">C＋追加の修正</div></div></div>
   </div>
-  <div class="callout f">最初から完璧でなくていい。<b class="grad">見て、追加で伝えれば</b>近づけられる。</div>
+  <div class="callout f">書いた分だけ狙いに近づく。最初から完璧でなくても、<b class="grad">見て、追加で伝えれば</b>近づけられる。</div>
 </section>
 
 <!-- 12 5要素 -->
@@ -378,7 +392,7 @@
 
 <div id="bar">
   <button id="prev" aria-label="前へ">← 前</button>
-  <span id="pageNo">1 / 15</span>
+  <span id="pageNo">1 / 16</span>
   <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
   <button id="notesBtn">話す内容メモ (N)</button>
