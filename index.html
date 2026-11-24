@@ -706,6 +706,7 @@
     else if (k === 'Home') show(0, false);
     else if (k === 'End') show(slides.length - 1, true);
     else if (k === 'f' || k === 'F') toggleFs();
+    else if (k === 's' || k === 'S') window.open('script.html', 'deck-script', 'width=720,height=900');   // 発表原稿を別のウィンドウで開く（画面にボタンは出さない）
   });
 
   var tx = null;
