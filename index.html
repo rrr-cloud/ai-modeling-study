@@ -312,8 +312,8 @@
   <h2>AIが3Dモデルを作るしくみ</h2>
   <div class="flow">
     <div class="step f"><div class="box"><b>利用者</b><span>日本語で指示を出す</span></div></div>
-    <div class="step f"><div class="arrow">→</div><div class="box"><b>Claude Code</b><span>指示を読み、手順を考えて<br>道具を操作するAI</span></div></div>
-    <div class="step f"><div class="arrow">→</div><div class="box"><b>MCP</b><span>AIと外部の道具を<br>つなぐ共通の規格</span></div></div>
+    <div class="step f"><div class="arrow">→</div><div class="box"><b>Claude Code</b><span>指示を読み、手順を考えて<br>外部のソフトを操作するAI</span></div></div>
+    <div class="step f"><div class="arrow">→</div><div class="box"><b>MCP</b><span>AIと外部のソフトやサービスを<br>つなぐ共通の規格</span></div></div>
     <div class="step f"><div class="arrow">→</div><div class="box"><b>Blender</b><span>無料の3Dソフト。<br>ここで形が作られる</span></div></div>
   </div>
   <div class="loop f">Claude Code は、できた物の画像を自分で確認し、問題があれば直します。</div>
@@ -454,7 +454,7 @@
     <div class="card f"><div class="no">2</div><div><h3>直すときは同じ会話で頼む</h3><p>今回は、1回の修正で +0.4〜0.6万でした。</p></div></div>
     <div class="card f"><div class="no">3</div><div><h3>別の作業は、新しい会話で始める</h3><p>会話が長くなるほど、操作のたびに読む量が増えます。前提は仕様のファイル（CLAUDE.md、copilot-instructions.md など）に書いておけば、新しい会話でも引き継げます。</p></div></div>
     <div class="card f"><div class="no">4</div><div><h3>完成の基準を書く</h3><p>指示Cに「斜め上からの画像を1回見て、寸法と色分けが合っていれば完成」と足すと、約6.4万から約5.5万に減りました（操作は10回から3回）。</p></div></div>
-    <div class="card f"><div class="no">5</div><div><h3>使わない道具は読み込まない</h3><p>作業をさせずに比べると、Blender の道具3つを読み込むだけで約4.3万から約4.9万に増えました。</p></div></div>
+    <div class="card f"><div class="no">5</div><div><h3>使わないツールは読み込まない</h3><p>ツールは、MCP でつないだソフトの操作機能のことです。作業をさせずに比べると、Blender のツール3つを読み込むだけで約4.3万から約4.9万に増えました。</p></div></div>
   </div>
   <p class="foot">※ 数字は今回 Claude Code が記録した値で、小さな作業での一例です。4 は2回試した結果で、確認を減らすと誤りに気づきにくくなる点に注意が必要です。</p>
 </section>
@@ -496,7 +496,7 @@
       <div class="card f"><h3>1. 仕様を書く</h3><p>目的、入力と出力、条件、完成の基準をファイルに書きます。AIと相談しながら書いても構いません。</p></div>
       <div class="card f"><h3>2. AIに作らせる</h3><p>仕様のファイルを渡します。作業の手順はAIに任せます。</p></div>
       <div class="card f"><h3>3. 仕様と照らして確かめる</h3><p>完成の基準を満たしているかを、人が確認します。</p></div>
-      <div class="card f"><h3>4. 直すときは仕様を直す</h3><p>仕様が残るので、誰が頼んでも同じ物を作れます。レビューもできます。</p></div>
+      <div class="card f"><h3>4. 直すときは仕様を直す</h3><p>仕様が残るので、誰が頼んでも同じ条件で作らせることができます。仕様そのもののレビューもできます。</p></div>
     </div>
 <pre><span class="h"># 問い合わせ一覧の作成 仕様</span>
 <span class="h">## 目的</span>
@@ -525,7 +525,7 @@
     <div class="card f"><div class="big-num">1</div><h3>個人で試す</h3><p>下書き、要約、調べ物をAIに頼んでみます。</p><div class="goal">目安：週に数回使っている</div></div>
     <div class="card f"><div class="big-num">2</div><h3>指示をひな形にする</h3><p>うまくいった指示を5項目の形で保存し、次回も使います。</p><div class="goal">目安：ひな形が3つある</div></div>
     <div class="card f"><div class="big-num">3</div><h3>作業を任せる</h3><p>仕様を渡して、表の整理や小さなツールの作成を任せます。</p><div class="goal">目安：確認だけで済む作業が1つある</div></div>
-    <div class="card f"><div class="big-num">4</div><h3>チームで共有する</h3><p>仕様、ひな形、確認の手順をチームで共有します。</p><div class="goal">目安：誰が頼んでも同じ品質になる</div></div>
+    <div class="card f"><div class="big-num">4</div><h3>チームで共有する</h3><p>仕様、ひな形、確認の手順をチームで共有します。</p><div class="goal">目安：頼む人による品質の差が小さい</div></div>
   </div>
 </section>
 
@@ -562,7 +562,7 @@
   <div class="inner" style="max-width:900px">
     <p class="kicker">まとめ</p>
     <ul class="summary">
-      <li>AIは、指示を受けて道具を操作し、物を作れるようになりました。</li>
+      <li>AIは、指示を受けてソフトを操作し、物を作れるようになりました。</li>
       <li>指示に書いた項目はそのとおりに作られ、書いていない項目はAIが決めます。</li>
       <li>何を作るかを仕様として書き、結果を確かめることが、人の仕事の中心になります。</li>
     </ul>
@@ -614,6 +614,7 @@
       el.classList.toggle('now', k === step - 1);
     });
     renderNotes();
+    publish();
   }
 
   function renderNotes() {
@@ -664,6 +665,26 @@
     if (location.hash !== '#' + (cur + 1)) history.replaceState(null, '', '#' + (cur + 1));
     if (i !== prev || !slides[i].dataset.entered) { slides[i].dataset.entered = '1'; onEnter(slides[i]); }
   }
+
+  var ch = null, lastCmd = null, seq = 0;
+  try { if ('BroadcastChannel' in window) ch = new BroadcastChannel('deck-sync'); } catch (e) {}
+  function publish() {
+    var st = { t: 'state', cur: cur, step: step, n: slides.length, seq: (seq = Math.max(seq + 1, Date.now())) };
+    try { if (ch) ch.postMessage(st); } catch (e) {}
+    try { localStorage.setItem('deck-sync-state', JSON.stringify(st)); } catch (e) {}
+  }
+  function onCommand(m) {
+    if (!m || !m.t) return;
+    if (m.id) { if (m.id === lastCmd) return; lastCmd = m.id; }
+    if (m.t === 'next') next();
+    else if (m.t === 'prev') prev();
+    else if (m.t === 'goto') show(m.cur, false);
+    else if (m.t === 'hello') publish();
+  }
+  if (ch) ch.onmessage = function (e) { onCommand(e.data); };
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'deck-sync-cmd' && e.newValue) { try { onCommand(JSON.parse(e.newValue)); } catch (x) {} }
+  });
 
   function next() { if (step < frags(cur).length) { step++; applySteps(); } else if (cur < slides.length - 1) show(cur + 1, false); }
   function prev() { if (step > 0) { step--; applySteps(); } else if (cur > 0) show(cur - 1, true); }

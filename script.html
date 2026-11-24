@@ -23,7 +23,16 @@
   .cue { display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: var(--warm); border-radius: 4px; padding: 1px 7px; margin-right: 8px; vertical-align: 2px; }
   .total { color: var(--sub); font-size: 14px; margin-top: 20px; }
   a { color: var(--accent); }
+  .say { padding: 4px 10px; border-left: 4px solid transparent; border-radius: 4px; cursor: pointer; }
+  .say.cur { background: #fff4d6; border-left-color: var(--warm); }
+  section.curpage { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  #sync { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; background: #1d2433; color: #fff; padding: 8px 14px; font-size: 14px; }
+  #sync button { font: inherit; color: #fff; background: transparent; border: 1px solid rgba(255,255,255,.4); border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+  #sync .st { flex: 1; }
+  #sync .off { color: #ffcf8a; }
   @media print {
+    #sync { display: none; }
+    .say.cur { background: none; border-left-color: transparent; }
     body { background: #fff; }
     main { padding: 0; }
     section { border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 12px 0; }
@@ -32,10 +41,11 @@
 </style>
 </head>
 <body>
+<div id="sync"><span class="st" id="syncSt"><span class="off">資料と連動していません。同じブラウザで資料を開くと連動します。</span></span><button id="bPrev">← 前へ</button><button id="bNext">次へ →</button></div>
 <main>
   <header>
     <h1>発表原稿：AIによる3DモデリングとAI駆動開発</h1>
-    <p>約10分。スライドは <a href="index.html">資料</a> を開き、<b>→ キー</b>で進めます。発表中は資料で <b>N キー</b>を押すと、いま話す段落が光った状態でこの原稿が下に出ます。</p>
+    <p>約10分。<a href="index.html" target="_blank" rel="noopener">資料</a>を同じブラウザの別のウィンドウで開くと、資料のページ送りに合わせて、いま話す段落に色が付き、自動でスクロールします。この原稿のページで <b>→ / ← キー</b>を押すか、段落をクリックしても、資料を動かせます。</p>
     <div class="legend"><span><b>▶ 押す</b>：→ キーを押して次の項目を出す</span><span>（動画）：動画は自動で流れる。止めて話してもよい</span></div>
     <p class="noprint"><button onclick="window.print()">印刷する</button></p>
   </header>
@@ -45,15 +55,61 @@
 <script src="script-data.js"></script>
 <script>
   var list = document.getElementById('list');
-  (window.TALK_SCRIPT || []).forEach(function (s, i) {
+  var S = window.TALK_SCRIPT || [];
+  S.forEach(function (s, i) {
     var sec = document.createElement('section');
+    sec.id = 'sec-' + i;
     var h = '<div class="head"><span class="no">' + (i + 1) + '</span><span class="title">' + s.title + '</span><span class="time">' + s.time + '</span></div>';
     s.steps.forEach(function (t, k) {
-      h += '<p class="say">' + (k > 0 ? '<span class="cue">▶ 押す</span>' : '') + t + '</p>';
+      h += '<p class="say" id="p-' + i + '-' + k + '" data-i="' + i + '" data-k="' + k + '">' + (k > 0 ? '<span class="cue">▶ 押す</span>' : '') + t + '</p>';
     });
     sec.innerHTML = h;
     list.appendChild(sec);
   });
+
+  // 資料（index.html）のページ送りと連動する
+  var ch = null, last = null, target = null;
+  try { if ('BroadcastChannel' in window) ch = new BroadcastChannel('deck-sync'); } catch (e) {}
+  function send(m) {
+    m.id = Date.now() + '-' + Math.random();   // 2つの経路で届いても、資料側で1回だけ実行する
+    try { if (ch) ch.postMessage(m); } catch (e) {}
+    try { localStorage.setItem('deck-sync-cmd', JSON.stringify(m)); } catch (e) {}
+  }
+  function apply(st) {
+    if (!st || st.t !== 'state') return;
+    if (last && st.seq && last.seq && st.seq <= last.seq) return;   // 2つの経路で届く同じ状態・古い状態は無視する
+    last = st;
+    var old = document.querySelectorAll('.say.cur, section.curpage');
+    for (var j = 0; j < old.length; j++) old[j].classList.remove('cur', 'curpage');
+    var sec = document.getElementById('sec-' + st.cur);
+    var steps = S[st.cur] ? S[st.cur].steps.length : 1;
+    var p = document.getElementById('p-' + st.cur + '-' + Math.min(st.step, steps - 1));
+    if (sec) sec.classList.add('curpage');
+    if (p) { p.classList.add('cur'); p.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    document.getElementById('syncSt').textContent = '資料と連動中：' + (st.cur + 1) + ' / ' + st.n + ' ページ';
+    // 段落をクリックしたときは、その段落まで資料を進める
+    if (target && target.cur === st.cur) {
+      if (st.step < target.step) send({ t: 'next' }); else target = null;
+    }
+  }
+  if (ch) ch.onmessage = function (e) { apply(e.data); };
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'deck-sync-state' && e.newValue) { try { apply(JSON.parse(e.newValue)); } catch (x) {} }
+  });
+  document.getElementById('bNext').onclick = function () { target = null; send({ t: 'next' }); };
+  document.getElementById('bPrev').onclick = function () { target = null; send({ t: 'prev' }); };
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); target = null; send({ t: 'next' }); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); target = null; send({ t: 'prev' }); }
+  });
+  list.addEventListener('click', function (e) {
+    var p = e.target.closest ? e.target.closest('.say') : null;
+    if (!p) return;
+    target = { cur: +p.dataset.i, step: +p.dataset.k };
+    send({ t: 'goto', cur: target.cur });
+  });
+  try { var saved = localStorage.getItem('deck-sync-state'); if (saved) apply(JSON.parse(saved)); } catch (e) {}
+  send({ t: 'hello' });
 </script>
 </body>
 </html>
