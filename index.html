@@ -166,6 +166,11 @@
   .tokpts .card h3 { font-size: 21px; }
   .tokpts .card p { font-size: 16.5px; }
   .foot { font-size: 14px; color: var(--sub); margin: 12px 0 0; }
+  .rounds .chars small { font-size: 14px; }
+  .rounds .what { font-size: 15.5px; }
+  .rounds .col.vs { border-color: rgba(122,162,255,.55); }
+  .tokpts { margin-bottom: 22px; }
+  .tokpts .card { padding: 24px 24px; }
   /* 進め方 */
   .road .card { display: flex; flex-direction: column; padding: 22px 22px; }
   .road .card h3 { font-size: 23px; }
@@ -330,23 +335,30 @@
   <div class="callout f">最初から完璧でなくていい。<b class="grad">見て、追加で伝えれば</b>近づけられる。</div>
 </section>
 
-<!-- 13 トークン -->
+<!-- 13 トークン：大雑把に始めて直す -->
 <section class="slide">
   <p class="kicker">トークン（AIの使用量）</p>
-  <h2>詳しく書いても、<span class="grad">指示そのものは安い</span></h2>
-  <table class="tok">
-    <tr><th></th><th>トークン数</th><th>操作の回数</th><th>時間</th></tr>
-    <tr><td>指示 A（4回の平均）</td><td>約 5.2 万</td><td>4〜9 回</td><td>30〜45 秒</td></tr>
-    <tr><td>指示 B</td><td>約 5.3 万</td><td>5 回</td><td>44 秒</td></tr>
-    <tr><td>指示 C</td><td>約 6.4 万</td><td>15 回</td><td>2分28秒</td></tr>
-    <tr><td>C ＋ 追加の修正</td><td><b>+0.7 万</b>（累計 7.1 万）</td><td>+5 回</td><td>+1分25秒</td></tr>
-  </table>
-  <div class="grid3 tokpts">
-    <div class="card f"><h3>指示文はごく一部</h3><p>どの実験も約5万は毎回かかる基本の分（推定）。95文字の指示文は、その1%にも満たない。</p></div>
-    <div class="card f"><h3>増えるのは「作業と確認」</h3><p>Cで増えたのは、AIが確認して直した分。確認を省けば安いが、出来は落ちる。</p></div>
-    <div class="card f"><h3>高くつくのは「やり直し」</h3><p>狙いと違って一から頼み直すと、また約5万。続けて直すなら+0.7万で済んだ。</p></div>
+  <h2>大雑把に始めて、<span class="grad">直していくと？</span></h2>
+  <div class="cmp4 rounds">
+    <div class="col"><img src="videos/e_round1.jpg" alt="1往復目：白いマグ"><div class="meta"><div class="chars">5.2<small>万</small></div><div class="what">1往復目「コップを作って」</div></div></div>
+    <div class="col"><img src="videos/e_round2.jpg" alt="2往復目：藍と素焼きの2色"><div class="meta"><div class="chars">5.6<small>万（累計）</small></div><div class="what">2往復目「色を藍と素焼きに」</div></div></div>
+    <div class="col"><img src="videos/e_round3.jpg" alt="3往復目：寸法を指定"><div class="meta"><div class="chars">6.2<small>万（累計）</small></div><div class="what">3往復目「高さ9.5cm、口8cm…」</div></div></div>
+    <div class="col vs"><img src="videos/prompt_c.jpg" alt="指示C：最初から仕様で1回"><div class="meta"><div class="chars">6.4<small>万</small></div><div class="what">比較：指示C（仕様で1回）</div></div></div>
   </div>
-  <p class="foot">※ トークン数は今回の実験で Claude Code が記録した値。料金は契約や使い方で変わります。</p>
+  <div class="callout f">同じ仕上がりまでのトークンは<b class="grad">ほぼ同じ</b>。違ったのは、<b class="warmtxt">人が見て直した回数（3往復 対 1回）</b>。</div>
+</section>
+
+<!-- 13b トークン：考え方 -->
+<section class="slide">
+  <p class="kicker">トークン（AIの使用量）</p>
+  <h2>使用量を決めるのは<span class="grad">「往復」と「やり直し」</span></h2>
+  <div class="grid3 tokpts">
+    <div class="card f"><h3>指示文の長さはほぼ関係ない</h3><p>どの実験も約5万は毎回かかる基本の分（推定）。95文字の指示文は、その1%にも満たない。</p></div>
+    <div class="card f"><h3>直すなら、同じ会話で</h3><p>同じ会話なら1往復 +0.4〜0.7万。一から頼み直すと、毎回また約5万。</p></div>
+    <div class="card f"><h3>最初に書くと、人の往復が減る</h3><p>トークンは同じくらいでも、見て・考えて・書く手間が3回から1回になった。</p></div>
+  </div>
+  <div class="callout f"><b>GitHub Copilot</b> も 2026年6月から、トークン量で数える方式に。<b class="grad">同じ考え方があてはまる。</b></div>
+  <p class="foot">※ トークン数は今回の実験で Claude Code が記録した値（小さな作業での一例）。料金は契約や使い方で変わります。</p>
 </section>
 
 <!-- 14 5要素 -->
@@ -451,7 +463,7 @@
 
 <div id="bar">
   <button id="prev" aria-label="前へ">← 前</button>
-  <span id="pageNo">1 / 18</span>
+  <span id="pageNo">1 / 19</span>
   <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
   <button id="notesBtn">話す内容メモ (N)</button>
