@@ -158,6 +158,27 @@
   .vsteps .card h3 { font-size: 22px; margin: 0 0 2px; }
   .vsteps .card p { font-size: 16px; }
 
+  /* トークン */
+  table.tok { font-size: 21px; margin: -6px 0 18px; }
+  table.tok td, table.tok th { padding: 10px 18px; }
+  table.tok td:first-child { width: 30%; }
+  .tokpts .card { padding: 18px 22px; }
+  .tokpts .card h3 { font-size: 21px; }
+  .tokpts .card p { font-size: 16.5px; }
+  .foot { font-size: 14px; color: var(--sub); margin: 12px 0 0; }
+  /* なぜ今 */
+  .why .big-num { font-size: 30px; line-height: 1.3; }
+  .why .card p { font-size: 18px; }
+  .why { margin-bottom: 24px; }
+  /* 進め方 */
+  .road .card { display: flex; flex-direction: column; padding: 22px 22px; }
+  .road .card h3 { font-size: 23px; }
+  .road .goal { margin-top: auto; padding-top: 14px; font-size: 15.5px; color: var(--ok); border-top: 1px dashed var(--line); }
+  .road .card p { margin-bottom: 12px; }
+  /* 守ること */
+  .rules { margin: 6px 0 0; padding-left: 1.2em; }
+  .rules li { font-size: 19px; line-height: 1.6; color: var(--ink); margin-bottom: 6px; }
+
   /* 話す内容メモ */
   #notes { display: none; position: fixed; left: 0; right: 0; bottom: 52px; max-height: 38vh; overflow: auto; background: rgba(8,12,24,.97); border-top: 1px solid var(--line); padding: 14px 26px 18px; z-index: 5; }
   body.show-notes #notes { display: block; }
@@ -218,8 +239,8 @@
   <h2>持ち帰ってほしいのは、<span class="grad">3つだけ</span></h2>
   <div class="grid3" style="flex:1;align-content:center">
     <div class="card f"><div class="big-num grad">1</div><h3>AIは「手を動かす」</h3><p>質問に答えるだけでなく、道具を操作して物を作れる</p></div>
-    <div class="card f"><div class="big-num grad">2</div><h3>指示で結果が変わる</h3><p>同じAIでも、伝え方しだいで仕上がりがまるで違う</p></div>
-    <div class="card f"><div class="big-num grad">3</div><h3>「仕様」が主役になる</h3><p>これからは、何を作るかを書く力が大事になる</p></div>
+    <div class="card f"><div class="big-num grad">2</div><h3>指示で結果が変わる</h3><p>書いていない所はAIが決める。伝え方しだいで仕上がりが変わる</p></div>
+    <div class="card f"><div class="big-num grad">3</div><h3>「仕様」が主役になる</h3><p>これからは、何を作るかを書いて残す力が大事になる</p></div>
   </div>
 </section>
 
@@ -269,51 +290,70 @@
   <button class="replay">↻ もう一度</button>
 </section>
 
-<!-- 7b 指示Aを4回 -->
+<!-- 8 指示Aを4回 -->
 <section class="slide">
   <p class="kicker">指示 A を 4 回</p>
-  <h2>同じ「コップを作って」でも、<span class="grad">AIが決めている</span></h2>
+  <h2>同じ「コップを作って」を、<span class="grad">4回頼んだ</span></h2>
   <div class="cmp4">
-    <div class="col"><img src="videos/a_run1.jpg" alt="1回目：ガラスのコップ"><div class="meta"><div class="what">1回目：ガラス<br>直径8.5cm・高さ11cm</div></div></div>
-    <div class="col"><img src="videos/a_run2.jpg" alt="2回目：ガラスのコップ"><div class="meta"><div class="what">2回目：ガラス<br>直径8.2cm・高さ12cm</div></div></div>
-    <div class="col"><img src="videos/a_run3.jpg" alt="3回目：ガラスのコップ"><div class="meta"><div class="what">3回目：ガラス<br>直径9.3cm・高さ12.3cm</div></div></div>
-    <div class="col"><img src="videos/a_run4.jpg" alt="4回目：取っ手つきの白い陶器のコップ"><div class="meta"><div class="what">4回目：<b style="color:var(--warm)">陶器・取っ手つき</b><br>直径9cm・高さ10cm</div></div></div>
+    <div class="col"><img src="videos/a_run1.jpg" alt="1回目：白い陶器のコップ"><div class="meta"><div class="what">1回目：白い陶器<br>高さ約11cm</div></div></div>
+    <div class="col"><img src="videos/a_run2.jpg" alt="2回目：白い陶器のコップ"><div class="meta"><div class="what">2回目：白い陶器<br>高さ約10cm・直径約9cm</div></div></div>
+    <div class="col"><img src="videos/a_run3.jpg" alt="3回目：白い陶器のコップ"><div class="meta"><div class="what">3回目：白い陶器<br>高さ約10cm・直径約9cm</div></div></div>
+    <div class="col"><img src="videos/a_run4.jpg" alt="4回目：白い陶器のコップ"><div class="meta"><div class="what">4回目：白い陶器<br>高さ約10cm・直径約9cm</div></div></div>
   </div>
-  <div class="callout f">どれも「それらしい」コップ。でも素材・形・大きさは、書いていないので<b class="grad">AIが推測で選んだ</b>もの。</div>
+  <div class="callout f">今回は4回とも白い陶器。でも<b class="warmtxt">別の日の実験では4回中3回がガラスのコップ</b>だった。<br>書いていない所は、AIがその都度<b class="grad">推測で決めている</b>。</div>
 </section>
 
-<!-- 8 動画B -->
+<!-- 9 動画B -->
 <section class="slide vslide">
   <video src="videos/prompt_b.mp4" poster="videos/prompt_b.jpg" muted playsinline preload="auto" aria-label="指示B「白い陶器のマグカップ」の動画"></video>
   <button class="replay">↻ もう一度</button>
 </section>
 
-<!-- 9 動画C -->
+<!-- 10 動画C -->
 <section class="slide vslide">
   <video src="videos/prompt_c.mp4" poster="videos/prompt_c.jpg" muted playsinline preload="auto" aria-label="指示C 仕様として書いた場合の動画"></video>
   <button class="replay">↻ もう一度</button>
 </section>
 
-<!-- 10 動画D -->
+<!-- 11 動画D -->
 <section class="slide vslide">
   <video src="videos/prompt_d.mp4" poster="videos/prompt_d.jpg" muted playsinline preload="auto" aria-label="指示C＋追加の修正の動画"></video>
   <button class="replay">↻ もう一度</button>
 </section>
 
-<!-- 11 比較 -->
+<!-- 12 比較 -->
 <section class="slide">
   <p class="kicker">結果を並べる</p>
-  <h2>具体的に書くほど、<span class="grad">推測が減る</span></h2>
+  <h2>書いた分だけ、<span class="grad">狙いに近づく</span></h2>
   <div class="cmp4">
-    <div class="col"><img src="videos/a_snap.jpg" alt="指示Aの結果：ガラスのコップ"><div class="meta"><div class="chars">7<small>文字</small></div><div class="what">A：ひとこと</div></div></div>
-    <div class="col"><img src="videos/prompt_b.jpg" alt="指示Bの結果：白い陶器のマグ"><div class="meta"><div class="chars">22<small>文字</small></div><div class="what">B：少し具体的</div></div></div>
-    <div class="col"><img src="videos/prompt_c.jpg" alt="指示Cの結果：二色のマグ"><div class="meta"><div class="chars">95<small>文字</small></div><div class="what">C：仕様として書く</div></div></div>
-    <div class="col"><img src="videos/prompt_d.jpg" alt="追加修正の結果：コースター付きのマグ"><div class="meta"><div class="chars">+55<small>文字</small></div><div class="what">C＋追加の修正</div></div></div>
+    <div class="col"><img src="videos/prompt_a.jpg" alt="指示Aの結果"><div class="meta"><div class="chars">7<small>文字</small></div><div class="what">A：ひとこと<br>素材も形もAIが決める</div></div></div>
+    <div class="col"><img src="videos/prompt_b.jpg" alt="指示Bの結果"><div class="meta"><div class="chars">22<small>文字</small></div><div class="what">B：少し具体的<br>書いた所だけ確実になる</div></div></div>
+    <div class="col"><img src="videos/prompt_c.jpg" alt="指示Cの結果"><div class="meta"><div class="chars">95<small>文字</small></div><div class="what">C：仕様として書く<br>寸法・色分けまで一致</div></div></div>
+    <div class="col"><img src="videos/prompt_d.jpg" alt="追加の修正の結果"><div class="meta"><div class="chars">+74<small>文字</small></div><div class="what">C＋追加の修正<br>見て、伝えて仕上げる</div></div></div>
   </div>
-  <div class="callout f">書いた分だけ狙いに近づく。最初から完璧でなくても、<b class="grad">見て、追加で伝えれば</b>近づけられる。</div>
+  <div class="callout f">最初から完璧でなくていい。<b class="grad">見て、追加で伝えれば</b>近づけられる。</div>
 </section>
 
-<!-- 12 5要素 -->
+<!-- 13 トークン -->
+<section class="slide">
+  <p class="kicker">トークン（AIの使用量）</p>
+  <h2>詳しく書いても、<span class="grad">指示そのものは安い</span></h2>
+  <table class="tok">
+    <tr><th></th><th>トークン数</th><th>操作の回数</th><th>時間</th></tr>
+    <tr><td>指示 A（4回の平均）</td><td>約 5.2 万</td><td>4〜9 回</td><td>30〜45 秒</td></tr>
+    <tr><td>指示 B</td><td>約 5.3 万</td><td>5 回</td><td>44 秒</td></tr>
+    <tr><td>指示 C</td><td>約 6.4 万</td><td>15 回</td><td>2分28秒</td></tr>
+    <tr><td>C ＋ 追加の修正</td><td><b>+0.7 万</b>（累計 7.1 万）</td><td>+5 回</td><td>+1分25秒</td></tr>
+  </table>
+  <div class="grid3 tokpts">
+    <div class="card f"><h3>指示文はごく一部</h3><p>どの実験も約5万は毎回かかる基本の分（推定）。95文字の指示文は、その1%にも満たない。</p></div>
+    <div class="card f"><h3>増えるのは「作業と確認」</h3><p>Cで増えたのは、AIが確認して直した分。確認を省けば安いが、出来は落ちる。</p></div>
+    <div class="card f"><h3>高くつくのは「やり直し」</h3><p>狙いと違って一から頼み直すと、また約5万。続けて直すなら+0.7万で済んだ。</p></div>
+  </div>
+  <p class="foot">※ トークン数は今回の実験で Claude Code が記録した値。料金は契約や使い方で変わります。</p>
+</section>
+
+<!-- 14 5要素 -->
 <section class="slide">
   <p class="kicker">良い指示とは</p>
   <h2>AIは<span class="grad">書いていないことを推測で埋める</span></h2>
@@ -330,58 +370,93 @@
   </div>
 </section>
 
-<!-- 13 仕様駆動開発 -->
+<!-- 15 向き合い方①なぜ今 -->
 <section class="slide">
-  <p class="kicker">仕様駆動開発</p>
+  <p class="kicker">これからの向き合い方 ①</p>
+  <h2>なぜ今、<span class="grad">向き合うのか</span></h2>
+  <div class="grid3 why">
+    <div class="card f"><div class="big-num grad">答える → 作業する</div><p>AIは相談相手から、道具を操作して物を作る「作業係」になった。今日の動画がその例。</p></div>
+    <div class="card f"><div class="big-num grad">数日 → 数分</div><p>試作がすぐできる。だから「作って、見て、直す」を何度も回せる。</p></div>
+    <div class="card f"><div class="big-num grad">差がつくのは</div><p>操作の速さではなく、<b>何を作るかを決めて書く力</b>と、<b>出来を確かめる力</b>。</p></div>
+  </div>
+  <div class="callout f">AIに任せるのは「作業」。<b class="grad">判断と責任は人に残る</b>。</div>
+</section>
+
+<!-- 16 向き合い方②仕様駆動開発 -->
+<section class="slide">
+  <p class="kicker">これからの向き合い方 ② 仕様駆動開発</p>
   <h2>指示を<span class="grad">「残る仕様書」</span>にする</h2>
   <div class="grid2" style="align-items:start">
     <div class="vsteps">
-      <div class="card f"><h3>① 仕様を書く</h3><p>何を・なぜ・どこまで。AIと相談しながら書いてよい</p></div>
-      <div class="card f"><h3>② AIが作る</h3><p>仕様を読んで手を動かす</p></div>
-      <div class="card f"><h3>③ 仕様と照らして確かめる</h3><p>「完成の基準」を満たしたか</p></div>
-      <div class="card f"><h3>④ 直すのは仕様から</h3><p>仕様が残るので、誰が頼んでも同じ物を作り直せる</p></div>
+      <div class="card f"><h3>① 仕様を書く</h3><p>目的・入力・出力・条件・完成の基準。AIと相談しながら書いてよい</p></div>
+      <div class="card f"><h3>② AIが作る</h3><p>仕様を渡して作らせる。作業の手順はAIに任せる</p></div>
+      <div class="card f"><h3>③ 仕様と照らして確かめる</h3><p>「完成の基準」を満たしたかを人が見る</p></div>
+      <div class="card f"><h3>④ 直すのは仕様から</h3><p>仕様が残るので、誰が頼んでも同じ物を作り直せる。チームで中身を確認できる</p></div>
     </div>
-<pre><span class="h"># マグカップ 仕様</span>
+<pre><span class="h"># 問い合わせ一覧づくり 仕様</span>
 <span class="h">## 目的</span>
-社内イベントの記念品の見本
+毎週の問い合わせを担当ごとに分け、
+対応漏れをなくす
 
-<span class="h">## 形</span>
-- 高さ 9.5cm / 口の直径 8cm
-- 縁の厚さ 4mm、縁は丸める
-- 取っ手は右、指2本が入る
+<span class="h">## 入力 / 出力</span>
+- 入力：先週の問い合わせメール
+- 出力：表（受信日・分類・担当・
+  要約1行・急ぎかどうか）
 
-<span class="h">## 見た目</span>
-- 上 2/3：藍色・つやあり（内側も）
-- 下 1/3：素焼きの土色・つやなし
+<span class="h">## 条件</span>
+- 分類は「契約・請求・不具合・その他」
+- 要約に個人名や連絡先を入れない
 
 <span class="h">## 完成の基準</span>
-- 斜め上からの画像で寸法と色分けが分かる</pre>
+- 20件で、分類の誤りが2件以下</pre>
   </div>
 </section>
 
-<!-- 14 進め方 -->
+<!-- 17 向き合い方③道筋 -->
 <section class="slide">
-  <p class="kicker">これからの進め方</p>
-  <h2>3Dに限らず、<span class="grad">明日からできること</span></h2>
-  <div class="grid4">
-    <div class="card f"><div class="big-num grad">1</div><h3>小さく試す</h3><p>毎日の作業から1つ。文章の下書き、表の整理、簡単なツールなど</p></div>
-    <div class="card f"><div class="big-num grad">2</div><h3>指示を残す</h3><p>うまくいった指示はひな形にして、次から使い回す</p></div>
-    <div class="card f"><div class="big-num grad">3</div><h3>確かめ方を決める</h3><p>「完成の基準」を先に決める。最後は必ず人が見る</p></div>
-    <div class="card f"><div class="big-num grad">4</div><h3>チームで共有</h3><p>仕様とひな形を共有して、チーム全体の質をそろえる</p></div>
+  <p class="kicker">これからの向き合い方 ③ 進め方</p>
+  <h2>4つの段階で、<span class="grad">少しずつ任せる</span></h2>
+  <div class="grid4 road" style="flex:1;align-content:center">
+    <div class="card f"><div class="big-num grad">1</div><h3>個人で試す</h3><p>下書き・要約・調べ物をAIに頼んでみる</p><div class="goal">目安：週に何度か、自然に使っている</div></div>
+    <div class="card f"><div class="big-num grad">2</div><h3>指示をひな形に</h3><p>うまくいった指示を5要素の形で保存し、使い回す</p><div class="goal">目安：よく使う作業のひな形が3つある</div></div>
+    <div class="card f"><div class="big-num grad">3</div><h3>作業ごと任せる</h3><p>仕様書を渡して、表の整理や小さなツールを作らせる</p><div class="goal">目安：確認だけで済む作業が1つある</div></div>
+    <div class="card f"><div class="big-num grad">4</div><h3>チームの仕組みに</h3><p>仕様書・ひな形・確認の手順をチームで共有する</p><div class="goal">目安：誰が頼んでも同じ品質になる</div></div>
   </div>
-  <div class="callout warm f"><b class="warmtxt">守ること：</b>会社のルールに従う ／ 機密情報・個人情報をAIに入れない ／ 出力をそのまま信じず確認する</div>
 </section>
 
-<!-- 15 まとめ -->
+<!-- 18 向き合い方④守ること -->
+<section class="slide">
+  <p class="kicker">これからの向き合い方 ④ 守ること</p>
+  <h2>AIも<span class="grad">間違える</span>。実験でも起きた。</h2>
+  <div class="grid2" style="align-items:stretch">
+    <div class="card f" style="border-color:rgba(255,184,107,.45)">
+      <h3 class="warmtxt">実験Cで起きたこと</h3>
+      <p>AIが自分の取っ手を消すつもりで、名前が同じだった<b>別の作業（指示B）の取っ手を消した</b>。AIは確認の段階で自分で気づき、調べて元に戻し、「元どおりか確かめてほしい」と報告した。</p>
+      <p style="margin-top:10px">※ 実験の作り（全部を1つのファイルで行った）も原因の一つ。</p>
+    </div>
+    <div class="card f">
+      <h3>だから、守ること</h3>
+      <ul class="rules">
+        <li>作業の範囲を分ける（任せる場所を区切る）</li>
+        <li>元に戻せるようにしておく（記録・控え）</li>
+        <li>最後は必ず人が確認する</li>
+        <li>機密情報・個人情報を入れない</li>
+        <li>会社のルールに従う</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 19 まとめ -->
 <section class="slide cover">
   <img class="bgimg" src="images/cover.jpg" alt="">
   <div class="shade"></div>
-  <div class="inner" style="max-width:900px">
+  <div class="inner" style="max-width:940px">
     <p class="kicker">まとめ</p>
-    <h1 style="font-size:54px">AIは作業を引き受ける。<br>人は<span class="grad">「何を作るか」</span>を<br>はっきり伝える。</h1>
-    <div class="card f" style="margin-top:30px;background:rgba(8,12,24,.75)">
-      <h3>今日の宿題（5分でOK）</h3>
-      <p style="color:#d5dcf0">身近な作業を1つ選び、<b>目的・形や量・見た目・条件・完成の基準</b>を書いてAIに頼んでみる。ひとことで頼んだ場合と比べてみる。</p>
+    <h1 style="font-size:50px">AIは作業を引き受ける。<br>人は<span class="grad">「何を作るか」</span>を<br>書いて、確かめる。</h1>
+    <div class="card f" style="margin-top:26px;background:rgba(8,12,24,.82)">
+      <h3>今日の宿題（10分でOK）</h3>
+      <p style="color:#d5dcf0">来週の会議の案内メールを、2通りでAIに頼んで比べる。<br>① ひとこと：「来週の定例会議の案内メールを書いて」<br>② 5要素で：目的・量（5行以内）・雰囲気（社内向け・丁寧）・条件・完成の基準</p>
     </div>
   </div>
 </section>
@@ -392,7 +467,7 @@
 
 <div id="bar">
   <button id="prev" aria-label="前へ">← 前</button>
-  <span id="pageNo">1 / 16</span>
+  <span id="pageNo">1 / 19</span>
   <button id="next" aria-label="次へ">次 →</button>
   <div id="progress"><i></i></div>
   <button id="notesBtn">話す内容メモ (N)</button>
