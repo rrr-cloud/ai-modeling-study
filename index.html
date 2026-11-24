@@ -169,6 +169,13 @@
   .rounds .chars small { font-size: 14px; }
   .rounds .what { font-size: 15.5px; }
   .rounds .col.vs { border-color: rgba(122,162,255,.55); }
+  .save { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; margin-bottom: 16px; }
+  .save .card { display: flex; gap: 16px; align-items: flex-start; padding: 14px 20px; }
+  .save .card:nth-child(3) { grid-row: span 2; }
+  .save .no { font-size: 34px; font-weight: 800; line-height: 1; min-width: 26px; }
+  .save h3 { font-size: 20px; margin: 0 0 4px; }
+  .save p { font-size: 15.5px; }
+  .tag2 { display: inline-block; font-size: 12px; color: var(--warm); border: 1px solid rgba(255,184,107,.5); border-radius: 6px; padding: 0 6px; margin-left: 6px; vertical-align: 1px; }
   .tokpts { margin-bottom: 22px; }
   .tokpts .card { padding: 24px 24px; }
   /* トークンと操作の回数 */
@@ -394,17 +401,19 @@
   </div>
 </section>
 
-<!-- 13b トークン：考え方 -->
+<!-- 13b トークンを抑えるには -->
 <section class="slide">
   <p class="kicker">トークン（AIの使用量）</p>
-  <h2>使用量を決めるのは<span class="grad">「往復」と「やり直し」</span></h2>
-  <div class="grid3 tokpts">
-    <div class="card f"><h3>指示文の長さはほぼ関係ない</h3><p>どの指示でも約5万は毎回かかる（操作0回でも約4.5万）。95文字の指示文は、その1%にも満たない。</p></div>
-    <div class="card f"><h3>直すなら、同じ会話で</h3><p>同じ会話なら1往復 +0.4〜0.7万。一から頼み直すと、毎回また約5万。</p></div>
-    <div class="card f"><h3>最初に書くと、人の往復が減る</h3><p>トークンは同じくらいでも、見て・考えて・書く手間が3回から1回になった。</p></div>
+  <h2>トークンを<span class="grad">抑えるには</span></h2>
+  <div class="save">
+    <div class="card f"><div class="no grad">1</div><div><h3>やり直しを減らす</h3><p>最初に仕様を書く。一から頼み直すと、毎回また約5万。</p></div></div>
+    <div class="card f"><div class="no grad">2</div><div><h3>同じ物を直すなら、同じ会話で</h3><p>1往復 +0.4〜0.7万で済んだ。</p></div></div>
+    <div class="card f"><div class="no grad">3</div><div><h3>別の作業に移るなら、会話を分ける</h3><p>やり取りは積み上がり、操作のたびに読み直される。前提は<b>仕様のファイル</b>（CLAUDE.md、copilot-instructions.md など）に残せば、新しい会話でもすぐ始められる。</p></div></div>
+    <div class="card f"><div class="no grad">4</div><div><h3>確かめてほしい所を「完成の基準」で伝える</h3><p>確認は必要な操作。どこまで確かめればよいかを書く。<span class="tag2">見込み</span></p></div></div>
+    <div class="card f"><div class="no grad">5</div><div><h3>使わない道具はつながない</h3><p>基本の分には、つないだ道具の説明も含まれる。<span class="tag2">見込み</span></p></div></div>
   </div>
-  <div class="callout f"><b>GitHub Copilot</b> も 2026年6月から、トークン量で数える方式に。<b class="grad">同じ考え方があてはまる。</b></div>
-  <p class="foot">※ トークン数は指示A〜Cなどを頼んだときに Claude Code が記録した値（小さな作業での一例）。料金は契約や使い方で変わります。</p>
+  <div class="callout f"><b>GitHub Copilot</b> も 2026年6月から、トークン量で数える方式に。<b class="grad">同じ工夫が効く。</b></div>
+  <p class="foot">※ 1・2 は今回 Claude Code が記録した値から。3 は前のページの理由から。4・5 は見込みで、今回は測っていません。</p>
 </section>
 
 <!-- 14 5要素 -->
