@@ -479,7 +479,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
       <div class="card f" style="margin-top:12px"><h3>AIからの質問</h3>
         <ol class="qs"><li>種類（グラス、マグカップなど）</li><li>大きさ</li><li>材質と色</li><li>中身を入れるか</li><li>用途（ポリゴン数を抑えるか）</li><li>装飾</li></ol>
       </div>
-      <div class="card f" style="margin-top:12px"><p>指示Cと同じ内容で答えると、寸法も色分けも指示Cと同じ仕上がりになりました。トークン消費量は約6.1万で、指示Cとほぼ同じです。</p></div>
+      <div class="card f" style="margin-top:12px"><p>指示Cと同じ内容で答えると、寸法も色分けも指示Cと同じ仕上がりになりました。トークン消費量は合計で約37万で、指示C（20万〜39万）と同じ程度です。</p></div>
     </div>
     <div><img src="videos/ask_result.jpg" alt="質問に答えて作らせたマグカップ" class="shot"></div>
   </div>
@@ -500,37 +500,38 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
 <!-- 17 トークン：頼み方 -->
 <section class="slide">
   <p class="kicker">トークン消費量</p>
-  <h2>頼み方で変わるのは、人の手間</h2>
-  <p class="sub" style="margin:-14px 0 14px">トークンは、AIが読み書きした文章量の単位です。料金や利用上限はトークン消費量で決まります。どれも、指示Cと同じ仕様のマグカップができるまでの量です。</p>
+  <h2>仕様を書いて頼むと、人の手間もトークン消費量も減る</h2>
+  <p class="sub" style="margin:-14px 0 14px">トークンは、AIが読み書きした文章量の単位です。料金や利用上限はトークン消費量で決まります。表は、指示Cと同じ仕様のマグカップができるまでに、AIが読み書きした量の合計です。</p>
   <table class="tok">
-    <tr><th>頼み方</th><th>トークン消費量</th><th>ツールの呼び出し</th><th>人が指示した回数</th></tr>
-    <tr><td>ひとことで始めて、3回に分けて頼む</td><td>6.2万</td><td>14回</td><td>3回</td></tr>
-    <tr><td>先に質問させる</td><td>6.1万</td><td>6回</td><td>2回</td></tr>
-    <tr><td>仕様を書いて1回で頼む（指示C、2回試行）</td><td>6.4万 ／ 5.7万</td><td>10回 ／ 4回</td><td>1回</td></tr>
-    <tr><td>指示C＋完成の基準（2回試行）</td><td>5.5万 ／ 5.5万</td><td>3回 ／ 3回</td><td>1回</td></tr>
+    <tr><th>頼み方</th><th>トークン消費量（合計）</th><th>AIの応答回数</th><th>人が指示した回数</th></tr>
+    <tr><td>ひとことで始めて、3回に分けて頼む</td><td>76万</td><td>14回</td><td>3回</td></tr>
+    <tr><td>先に質問させる</td><td>37万</td><td>7回</td><td>2回</td></tr>
+    <tr><td>仕様を書いて1回で頼む（指示C、2回試行）</td><td>39万 ／ 20万</td><td>7回 ／ 4回</td><td>1回</td></tr>
+    <tr><td>指示C＋完成の基準（2回試行）</td><td>15万 ／ 15万</td><td>3回 ／ 3回</td><td>1回</td></tr>
   </table>
-  <div class="callout f">トークン消費量は、頼み方ではほとんど変わりませんでした（同じ指示でも回によって 0.7万ほど変わります）。<br>変わったのは人の手間です。仕様を書いて頼むと、結果を見て指示を出し直す回数が 3回から 1回に減りました。</div>
+  <div class="callout f">仕様を書いて1回で頼むと、結果を見て指示を出し直す回数が 3回から 1回に減りました。<br>AIは応答のたびに、それまでの会話をすべて読み直します。指示を出し直すとAIの応答が増えるので、トークン消費量も増えます。</div>
+  <p class="foot">※ 「コップを作って」とだけ1回頼んだ場合は 24万〜51万でした（9回試行）。ただし、できるのは指示Aのコップです。同じ指示でも、AIが結果を確かめる回数によって変わります。</p>
 </section>
 
 <!-- 18 トークンと呼び出し回数 -->
 <section class="slide">
   <p class="kicker">トークン消費量</p>
-  <h2>トークン消費量は、AIの作業量で増える</h2>
+  <h2>トークン消費量は、AIの応答回数にほぼ比例する</h2>
   <div class="opgrid">
     <div class="opleft">
       <div class="card f">
-        <h3>ツールを1回呼び出すたびに</h3>
-        <ol class="cycle"><li>それまでのやり取りをすべて読む</li><li>次に実行するコードを書く</li><li>結果（文字や画像）を受け取る</li></ol>
-        <p>受け取った結果はやり取りに加わるので、呼び出しを重ねるほど、毎回読む量が増えます。</p>
+        <h3>AIは、1回応答するたびに</h3>
+        <ol class="cycle"><li>それまでの会話をすべて読み直す</li><li>次に実行するコードを書く</li><li>結果（文字や画像）を受け取る</li></ol>
+        <p>トークン消費量は、この読み書きを応答の回数だけ足した量です。受け取った結果は会話に加わるので、毎回読む量も少しずつ増えます。</p>
       </div>
       <div class="card f nums">
-        <div><span class="n">約4.3万</span><p>作業をしなくても毎回かかる分</p></div>
-        <div><span class="n">約1,300</span><p>呼び出し1回あたりの増加（平均）</p></div>
+        <div><span class="n">約5.3万</span><p>応答1回あたりのトークン消費量（平均）</p></div>
+        <div><span class="n">約4.3万</span><p>そのうち、指示の前から読み込まれている分</p></div>
       </div>
     </div>
     <figure class="chart">
-      <svg class="sc" viewBox="0 0 600 400" role="img" aria-label="ツールの呼び出し回数とトークン消費量の関係"><line x1="74" x2="580" y1="348.0" y2="348.0" class="gl"/><text x="64" y="353.0" class="ax" text-anchor="end">4万</text><line x1="74" x2="580" y1="253.1" y2="253.1" class="gl"/><text x="64" y="258.1" class="ax" text-anchor="end">5万</text><line x1="74" x2="580" y1="158.3" y2="158.3" class="gl"/><text x="64" y="163.3" class="ax" text-anchor="end">6万</text><line x1="74" x2="580" y1="63.4" y2="63.4" class="gl"/><text x="64" y="68.4" class="ax" text-anchor="end">7万</text><text x="74.0" y="372" class="ax" text-anchor="middle">0</text><text x="200.5" y="372" class="ax" text-anchor="middle">4</text><text x="327.0" y="372" class="ax" text-anchor="middle">8</text><text x="453.5" y="372" class="ax" text-anchor="middle">12</text><text x="580.0" y="372" class="ax" text-anchor="middle">16</text><text x="327.0" y="394" class="ax" text-anchor="middle">ツールの呼び出し回数</text><line x1="74.0" y1="280.4" x2="580.0" y2="77.8" class="fit"/><g class="pt"><circle cx="358.6" cy="218.4" r="6.5"/><title>指示A：9回・53,659トークン</title></g><g class="pt"><circle cx="263.8" cy="229.6" r="6.5"/><title>指示A：6回・52,486トークン</title></g><g class="pt"><circle cx="200.5" cy="237.4" r="6.5"/><title>指示A：4回・51,661トークン</title></g><g class="pt"><circle cx="232.1" cy="233.5" r="6.5"/><title>指示A：5回・52,070トークン</title></g><g class="pt"><circle cx="232.1" cy="233.5" r="6.5"/><title>指示A：5回・52,067トークン</title></g><g class="pt"><circle cx="232.1" cy="229.0" r="6.5"/><title>指示B：5回・52,547トークン</title></g><g class="pt"><circle cx="390.2" cy="122.5" r="6.5"/><title>指示C（1回目）：10回・63,772トークン</title></g><g class="pt"><circle cx="200.5" cy="187.6" r="6.5"/><title>指示C（2回目）：4回・56,913トークン</title></g><g class="pt"><circle cx="453.5" cy="74.7" r="6.5"/><title>指示C＋追加の修正：12回・68,808トークン</title></g><g class="pt"><circle cx="232.1" cy="236.2" r="6.5"/><title>3回に分けて頼む 1回目：5回・51,789トークン</title></g><g class="pt"><circle cx="390.2" cy="194.9" r="6.5"/><title>3回に分けて頼む 2回目まで：10回・56,137トークン</title></g><g class="pt"><circle cx="516.8" cy="136.8" r="6.5"/><title>3回に分けて頼む 3回目まで：14回・62,264トークン</title></g><g class="pt"><circle cx="74.0" cy="312.6" r="6.5"/><title>先に質問させる（質問のみ）：0回・43,729トークン</title></g><g class="pt"><circle cx="263.8" cy="151.5" r="6.5"/><title>先に質問させる（完成まで）：6回・60,712トークン</title></g><g class="pt"><circle cx="168.9" cy="210.3" r="6.5"/><title>指示C＋完成の基準：3回・54,521トークン</title></g><g class="pt"><circle cx="168.9" cy="202.0" r="6.5"/><title>指示C＋完成の基準：3回・55,390トークン</title></g><g class="pt"><circle cx="232.1" cy="179.4" r="6.5"/><title>指示C＋ポリゴン数の上限：5回・57,773トークン</title></g><g class="pt"><circle cx="74.0" cy="317.8" r="6.5"/><title>作業なし（ツールを読み込まない）：0回・43,181トークン</title></g><g class="pt"><circle cx="105.6" cy="264.6" r="6.5"/><title>作業なし（ツール3つを読み込む）：1回・48,791トークン</title></g><text x="378.2" y="114.5" class="lbl" text-anchor="end">指示C（1回目）</text><text x="441.5" y="66.7" class="lbl" text-anchor="end">指示C＋追加の修正</text><text x="522.8" y="162.8" class="lbl" text-anchor="end">3回に分けて頼む</text><text x="86.0" y="333.8" class="lbl" text-anchor="start">作業なし</text></svg>
-      <figcaption>今回頼んだ19回分。呼び出しが多いほど増える傾向がありますが、1回の呼び出しで書くコードの量によって上下します。</figcaption>
+      <svg class="sc" viewBox="0 0 600 400" role="img" aria-label="AIの応答回数とトークン消費量の関係"><line x1="74" x2="580" y1="348.0" y2="348.0" class="gl"/><text x="64" y="353.0" class="ax" text-anchor="end">0</text><line x1="74" x2="580" y1="284.8" y2="284.8" class="gl"/><text x="64" y="289.8" class="ax" text-anchor="end">25万</text><line x1="74" x2="580" y1="221.6" y2="221.6" class="gl"/><text x="64" y="226.6" class="ax" text-anchor="end">50万</text><line x1="74" x2="580" y1="158.4" y2="158.4" class="gl"/><text x="64" y="163.4" class="ax" text-anchor="end">75万</text><line x1="74" x2="580" y1="95.2" y2="95.2" class="gl"/><text x="64" y="100.2" class="ax" text-anchor="end">100万</text><line x1="74" x2="580" y1="32.0" y2="32.0" class="gl"/><text x="64" y="37.0" class="ax" text-anchor="end">125万</text><text x="74.0" y="372" class="ax" text-anchor="middle">0</text><text x="158.3" y="372" class="ax" text-anchor="middle">4</text><text x="242.7" y="372" class="ax" text-anchor="middle">8</text><text x="327.0" y="372" class="ax" text-anchor="middle">12</text><text x="411.3" y="372" class="ax" text-anchor="middle">16</text><text x="495.7" y="372" class="ax" text-anchor="middle">20</text><text x="580.0" y="372" class="ax" text-anchor="middle">24</text><text x="327.0" y="394" class="ax" text-anchor="middle">AIの応答回数</text><line x1="116.2" y1="329.8" x2="558.9" y2="12.0" class="fit"/><g class="pt"><circle cx="179.4" cy="286.2" r="6.5"/><title>指示A：応答5回・合計24.5万トークン</title></g><g class="pt"><circle cx="179.4" cy="286.4" r="6.5"/><title>指示A：応答5回・合計24.4万トークン</title></g><g class="pt"><circle cx="200.5" cy="272.8" r="6.5"/><title>指示A：応答6回・合計29.7万トークン</title></g><g class="pt"><circle cx="179.4" cy="286.2" r="6.5"/><title>指示A：応答5回・合計24.4万トークン</title></g><g class="pt"><circle cx="284.8" cy="219.9" r="6.5"/><title>指示A：応答10回・合計50.7万トークン</title></g><g class="pt"><circle cx="221.6" cy="259.6" r="6.5"/><title>指示A：応答7回・合計35.0万トークン</title></g><g class="pt"><circle cx="179.4" cy="286.0" r="6.5"/><title>指示A：応答5回・合計24.5万トークン</title></g><g class="pt"><circle cx="200.5" cy="272.9" r="6.5"/><title>指示A：応答6回・合計29.7万トークン</title></g><g class="pt"><circle cx="179.4" cy="285.8" r="6.5"/><title>指示A：応答5回・合計24.6万トークン</title></g><g class="pt"><circle cx="242.7" cy="244.9" r="6.5"/><title>指示B：応答8回・合計40.8万トークン</title></g><g class="pt"><circle cx="200.5" cy="272.5" r="6.5"/><title>指示B：応答6回・合計29.9万トークン</title></g><g class="pt"><circle cx="390.2" cy="132.1" r="6.5"/><title>指示C＋追加の修正：応答15回・合計85.4万トークン</title></g><g class="pt"><circle cx="516.8" cy="32.7" r="6.5"/><title>指示C＋追加の修正：応答21回・合計124.7万トークン</title></g><g class="pt"><circle cx="263.8" cy="214.9" r="6.5"/><title>指示C＋追加の修正：応答9回・合計52.7万トークン</title></g><g class="pt"><circle cx="158.3" cy="296.4" r="6.5"/><title>指示C：応答4回・合計20.4万トークン</title></g><g class="pt"><circle cx="137.2" cy="309.9" r="6.5"/><title>指示C＋完成の基準：応答3回・合計15.1万トークン</title></g><g class="pt"><circle cx="137.2" cy="309.4" r="6.5"/><title>指示C＋完成の基準：応答3回・合計15.3万トークン</title></g><g class="pt"><circle cx="158.3" cy="296.0" r="6.5"/><title>指示C＋ポリゴン数の上限：応答4回・合計20.6万トークン</title></g><g class="pt"><circle cx="369.2" cy="156.0" r="6.5"/><title>ひとことで始めて、3回に分けて頼む：応答14回・合計76.0万トークン</title></g><g class="pt"><circle cx="221.6" cy="254.1" r="6.5"/><title>先に質問させる：応答7回・合計37.2万トークン</title></g><g class="pt"><circle cx="158.3" cy="297.9" r="6.5"/><title>時計：指示A：応答4回・合計19.8万トークン</title></g><g class="pt"><circle cx="158.3" cy="297.7" r="6.5"/><title>時計：指示A：応答4回・合計19.9万トークン</title></g><g class="pt"><circle cx="221.6" cy="252.6" r="6.5"/><title>時計：指示B：応答7回・合計37.7万トークン</title></g><g class="pt"><circle cx="158.3" cy="294.9" r="6.5"/><title>時計：指示B：応答4回・合計21.0万トークン</title></g><g class="pt"><circle cx="158.3" cy="296.2" r="6.5"/><title>時計：指示C：応答4回・合計20.5万トークン</title></g></svg>
+      <figcaption>今回 Blender で頼んだ25回分です（1回の頼みごとが1点）。指示の内容にかかわらず、応答の回数でほぼ決まっています。</figcaption>
     </figure>
   </div>
 </section>
@@ -540,11 +541,11 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
   <p class="kicker">トークン消費量</p>
   <h2>トークン消費量を抑える方法</h2>
   <div class="save">
-    <div class="card f"><div class="no">1</div><div><h3>頼み直しを減らす</h3><p>狙いと違う物ができて最初から頼み直すと、そのたびに約5万かかります。必要なことは最初の指示に書くか、先に質問させます。</p></div></div>
-    <div class="card f"><div class="no">2</div><div><h3>直すときは同じ会話で頼む</h3><p>今回は、1回の修正で +0.4〜0.6万でした。</p></div></div>
-    <div class="card f"><div class="no">3</div><div><h3>別の作業は、新しい会話で始める</h3><p>会話が長くなるほど、呼び出しのたびに読む量が増えます。前提はリポジトリのファイル（CLAUDE.md、copilot-instructions.md など）に書いておけば、新しい会話でも引き継げます。</p></div></div>
-    <div class="card f"><div class="no">4</div><div><h3>完成の基準を書く</h3><p>指示Cに「斜め上からの画像を1回見て、寸法と色分けが合っていれば完成」と足すと、2回とも約5.5万でした（足さない場合は 6.4万と 5.7万）。</p></div></div>
-    <div class="card f"><div class="no">5</div><div><h3>使わないツールは読み込まない</h3><p>ツールは、MCP でつないだソフトの操作機能のことです。作業をさせずに比べると、Blender のツール3つを読み込むだけで約4.3万から約4.9万に増えました。</p></div></div>
+    <div class="card f"><div class="no">1</div><div><h3>頼み直しを減らす</h3><p>狙いと違う物ができて最初から頼み直すと、そのたびに 20万以上かかります。必要なことは最初の指示に書くか、先に質問させます。</p></div></div>
+    <div class="card f"><div class="no">2</div><div><h3>修正は、まとめて1回で頼む</h3><p>今回は、修正を1回頼むたびに 14万〜27万かかりました。気づいた点は、1回の指示にまとめて伝えます。</p></div></div>
+    <div class="card f"><div class="no">3</div><div><h3>別の作業は、新しい会話で始める</h3><p>会話が長くなるほど、応答のたびに読み直す量が増えます。前提はリポジトリのファイル（CLAUDE.md、copilot-instructions.md など）に書いておけば、新しい会話でも引き継げます。</p></div></div>
+    <div class="card f"><div class="no">4</div><div><h3>完成の基準を書く</h3><p>指示Cに「斜め上からの画像を1回見て、寸法と色分けが合っていれば完成」と足すと、AIが結果を確かめる回数が減り、2回とも約15万でした（足さない場合は 39万と 20万）。</p></div></div>
+    <div class="card f"><div class="no">5</div><div><h3>使わないツールは読み込まない</h3><p>ツールは、MCP でつないだソフトの操作機能のことです。作業をさせずに比べると、Blender のツール3つを読み込むだけで約4.3万から約4.9万に増えました。この分は、応答のたびに読み直します。</p></div></div>
   </div>
   <p class="foot">※ 数字は今回 Claude Code が記録した値で、小さな作業での一例です。確認を減らすと誤りに気づきにくくなる点に注意が必要です。</p>
 </section>
@@ -557,7 +558,7 @@ bmesh.ops.bisect_plane(bm, ..., plane_co=(0,0,zl), plane_no=(0,0,1))</pre>
   <div class="grid3 cop">
     <div class="card f"><h3>クレジットの単位</h3><p class="v">1 クレジット ＝ 0.01ドル</p><p>Copilot Pro（月10ドル）には、月1,500クレジットが含まれます。</p></div>
     <div class="card f"><h3>トークンの単価（例）</h3><p class="v">入力 100万トークン ＝ 2ドル</p><p>Claude Sonnet 5.5 の場合。出力は10ドル、キャッシュ済みの入力は0.10ドルです。</p></div>
-    <div class="card f"><h3>換算の目安</h3><p class="v">5万トークン ≒ 10クレジット</p><p>5万トークンを入力として1回読む場合です。出力が多いと増え、キャッシュが効くと減ります。</p></div>
+    <div class="card f"><h3>換算の目安</h3><p class="v">20万トークン ≒ 2〜40クレジット</p><p>すべてキャッシュ済みの入力なら2、すべて新しい入力なら40です。会話の読み直しはキャッシュが効くので、実際は少ない側に寄ります。出力が多いと増えます。</p></div>
   </div>
   <div class="callout f">数え方が同じなので、前のページの5つの方法は GitHub Copilot でも同じように使えます。使用量は GitHub の請求のページで確認できます。</div>
   <p class="foot">※ 2026年11月時点の GitHub のドキュメントによる。単価はモデルごとに異なり、プランの内容は変わることがあります。</p>
@@ -700,7 +701,7 @@ cede1c5 実装: cancelled の注文を取り込まず、対象外として数え
       <p class="foot" style="margin-top:6px">実際のコミット履歴。仕様変更では、テストの時点で37件中10件が失敗し、実装のあと37件すべてが通りました。</p>
     </div>
   </div>
-  <div class="callout f">この実例で人がしたのは、仕様を24行書くこと、質問に答えること、テストの結果を確かめることです。コードは書いていません。<br>Claude Code の作業時間は合計で約5分、トークン消費量は約8.2万でした。このあと、差分を人がレビューします。</div>
+  <div class="callout f">この実例で人がしたのは、仕様を24行書くこと、質問に答えること、テストの結果を確かめることです。コードは書いていません。<br>Claude Code の作業時間は合計で約5分、トークン消費量は合計で約106万でした。このあと、差分を人がレビューします。</div>
 </section>
 
 <!-- 23 導入の進め方 -->
@@ -752,7 +753,7 @@ cede1c5 実装: cancelled の注文を取り込まず、対象外として数え
     <ul class="summary">
       <li>指示に書かなかった点は、AIが決めます。作らせる前に仕様を決め、決まっていない点はAIに質問させます。</li>
       <li>設計書・コード・テストはAIが書けます。人は、その内容を決めてレビューします。</li>
-      <li>仕様を書いても、トークン消費量はほとんど変わりません。減るのは、人が指示を出し直す工数です。</li>
+      <li>仕様を書いて1回で頼むと、指示を出し直す回数が減ります。人の工数も、トークン消費量も減ります。</li>
       <li>完成したかどうかは、AIの報告ではなく、テストとレビューで判断します。</li>
     </ul>
   </div>
